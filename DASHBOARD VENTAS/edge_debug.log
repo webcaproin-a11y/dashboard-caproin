@@ -1,0 +1,6 @@
+[11556:5952:0528/141621.382:WARNING:chrome\browser\extensions\activity_log\activity_log_policy.cc:71] Scheduling init
+[11556:5952:0528/141621.382:WARNING:chrome\browser\extensions\activity_log\activity_log_policy.cc:71] Scheduling init
+[11556:5952:0528/141621.433:WARNING:chrome\browser\ui\startup\startup_browser_creator.cc:394] Incognito mode disabled by policy, launching a normal browser session.
+[11556:5952:0528/141621.434:WARNING:chrome\browser\ui\startup\startup_browser_creator.cc:394] Incognito mode disabled by policy, launching a normal browser session.
+[33140:2356:0528/141621.818:ERROR:ui\gl\direct_composition_support.cc:243] GetGpuDriverOverlayInfo: Failed to retrieve video device
+[11556:5952:0528/141622.086:WARNING:chrome\browser\extensions\external_registry_loader_win.cc:283] Error observing HKLM: 5

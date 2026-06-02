@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DASHBOARD CAPROIN - CLIENTES</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="caproin-theme">
+    <div class="app-shell">
+        <!-- Header Section -->
+        <header class="caproin-header">
+            <div class="header-left">
+                <!-- Hamburger Menu -->
+                <div class="nav-menu-container">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <a href="index.aspx" class="dropdown-item">
+                            <i data-lucide="bar-chart-3"></i>
+                            <span>Dashboard Ventas</span>
+                        </a>
+                        <a href="vendedores.aspx" class="dropdown-item">
+                            <i data-lucide="trending-up"></i>
+                            <span>Análisis Vendedores</span>
+                        </a>
+                        <a href="clientes.aspx" class="dropdown-item active">
+                            <i data-lucide="pie-chart"></i>
+                            <span>Análisis Clientes</span>
+                        </a>
+                        <a href="facturas.aspx" class="dropdown-item">
+                            <i data-lucide="search"></i>
+                            <span>Consultar Facturas</span>
+                        </a>
+                        <a href="crm.aspx" class="dropdown-item">
+                            <i data-lucide="users"></i>
+                            <span>CRM Oportunidades</span>
+                        </a>
+                        <a href="ordenes.aspx" class="dropdown-item">
+                            <i data-lucide="clipboard-list"></i>
+                            <span>Órdenes Pendientes</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="header-info-stack">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <h1 class="brand-title">DASHBOARD CLIENTES</h1>
+                        <div class="theme-switcher">
+                            <button class="theme-dot cyan active" data-theme="cyan" title="Tema Cyan"></button>
+                            <button class="theme-dot emerald" data-theme="emerald" title="Tema Esmeralda"></button>
+                            <button class="theme-dot gold" data-theme="gold" title="Tema Oro"></button>
+                            <button class="theme-dot light" data-theme="light" title="Tema Claro"></button>
+                        </div>
+                    </div>
+                    <div class="last-update">
+                        Actualizado: <span id="update-timestamp">--/--/----</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-logo-container">
+                <img src="logo_caproin_wide.png" alt="CAPROIN S.A." class="main-logo">
+                <div class="export-buttons">
+                    <button class="btn-export pdf" onclick="exportToPDF()" title="Descargar PDF"><i data-lucide="file-text"></i> PDF</button>
+                    <button class="btn-export excel" onclick="exportToExcel()" title="Descargar Excel"><i data-lucide="file-spreadsheet"></i> EXCEL</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filters Section -->
+        <section class="filter-panel">
+            <div class="filter-group">
+                <label>FECHA INICIAL</label>
+                <div class="input-wrapper">
+                    <input type="date" id="date-start" value="2026-02-01">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>FECHA FINAL</label>
+                <div class="input-wrapper">
+                    <input type="date" id="date-end" value="2026-02-24">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>VENDEDOR</label>
+                <select id="vendedor">
+                    <option value="all">Todos</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>TIPO API</label>
+                <select id="tipo">
+                    <option value="all">Todos</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>MES</label>
+                <select id="mes">
+                    <option value="all">Todos</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>AÑO</label>
+                <select id="anio">
+                    <option value="all">Todos</option>
+                </select>
+            </div>
+            <div class="action-buttons">
+                <button id="btn-cargar" class="btn-caproin active"><i data-lucide="play"></i> CARGAR</button>
+                <button id="btn-demo" class="btn-caproin">DEMO</button>
+                <button id="btn-api" class="btn-caproin"><i data-lucide="link"></i> API</button>
+                <button id="btn-reset" class="btn-caproin" style="display: none; color: var(--danger);"><i
+                        data-lucide="x"></i> LIMPIAR FILTROS</button>
+            </div>
+        </section>
+
+        <div class="status-bar">
+            Sin filtros activos — carga datos para comenzar
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <main class="dashboard-grid">
+
+            <div class="section-title">VISIÓN GENERAL CLIENTES</div>
+
+            <div class="visuals-row">
+                <div class="chart-box">
+                    <div class="chart-box-header">
+                        <h3>PARETO DE CLIENTES</h3>
+                        <p>Participación (% y Ventas) - Periodo Seleccionado</p>
+                    </div>
+                    <div class="chart-area">
+                        <canvas id="paretoChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="list-box">
+                    <div class="list-box-header">
+                        <h3>TOP 10 CLIENTES</h3>
+                        <p>Facturación más alta en el periodo seleccionado</p>
+                    </div>
+                    <div class="client-table-wrapper" style="height: 350px; overflow-y: auto;">
+                        <table id="top-clients-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>CLIENTE</th>
+                                    <th style="text-align: right;">VENTAS</th>
+                                    <th>PART.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">RENDIMIENTO POR MARCAS & VARIACIONES YoY</div>
+
+            <div class="visuals-row" style="grid-template-columns: 1fr;">
+                <div class="chart-box">
+                    <div class="chart-box-header">
+                        <h3>TOP 5 CLIENTES POR MARCA PRINCIPAL</h3>
+                        <p>Comparativa combinada para: REXNORD, ERIEZ, VORTEX, POLYTECH, JOHN KING</p>
+                    </div>
+                    <div class="chart-area" style="height: 400px;">
+                        <canvas id="brandsRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visuals-row-3" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="list-box">
+                    <div class="list-box-header">
+                        <h3>🔝 TOP CRECIMIENTO (YoY)</h3>
+                        <p>Clientes con mayor aumento vs año ant.</p>
+                    </div>
+                    <div class="client-table-wrapper">
+                        <table id="growth-clients-table">
+                            <thead>
+                                <tr>
+                                    <th>CLIENTE</th>
+                                    <th style="text-align: right;">VAR %</th>
+                                    <th style="text-align: right;">VAR $$</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="list-box">
+                    <div class="list-box-header">
+                        <h3>📉 TOP CAÍDAS (YoY)</h3>
+                        <p>Clientes con mayor descenso vs año ant.</p>
+                    </div>
+                    <div class="client-table-wrapper">
+                        <table id="drop-clients-table">
+                            <thead>
+                                <tr>
+                                    <th>CLIENTE</th>
+                                    <th style="text-align: right;">VAR %</th>
+                                    <th style="text-align: right;">VAR $$</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="list-box">
+                    <div class="list-box-header">
+                        <h3>✨ NUEVOS CLIENTES</h3>
+                        <p>Compraron en selected year, 0 en prev year</p>
+                    </div>
+                    <div class="client-table-wrapper">
+                        <table id="new-clients-table">
+                            <thead>
+                                <tr>
+                                    <th>CLIENTE</th>
+                                    <th style="text-align: right;">VENTAS</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">ANÁLISIS DE FUGA DE CLIENTES</div>
+
+            <div class="list-box" style="margin-bottom: 30px;">
+                <div class="list-box-header">
+                    <h3>🚨 CLIENTES QUE NO HAN COMPRADO</h3>
+                    <p>Facturación este año = $0 | Compras año anterior > 0</p>
+                </div>
+                <div class="client-table-wrapper" style="height: 400px; overflow-y: auto;">
+                    <table id="lost-clients-table">
+                        <thead>
+                            <tr>
+                                <th>CLIENTE</th>
+                                <th style="text-align: right;">AÑO ANTERIOR</th>
+                                <th style="text-align: right;">ESTE AÑO</th>
+                                <th style="text-align: right;">VAR %</th>
+                                <th style="text-align: right;">VAR $$</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="clientes-script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="export-utils.js"></script>
+</body>
+
+</html>
+
