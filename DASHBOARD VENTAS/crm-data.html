@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Datos Raw - CAPROIN S.A.</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .data-table-container {
+            background: rgba(13, 25, 33, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 236, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        #raw-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+
+        #raw-data-table th {
+            background: rgba(0, 236, 255, 0.05);
+            color: var(--cyan);
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 2px solid rgba(0, 236, 255, 0.1);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        #raw-data-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #d1d5db;
+        }
+
+        #raw-data-table tr:hover {
+            background: rgba(0, 236, 255, 0.03);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 236, 255, 0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            width: 300px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 236, 255, 0.2);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .page-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 236, 255, 0.2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background: var(--cyan);
+            color: var(--bg-dark);
+            border-color: var(--cyan);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body class="bg-main">
+    <div class="main-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-left">
+                <div class="menu-container">
+                    <button id="menu-toggle" class="menu-btn">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <a href="index.html" class="dropdown-item">
+                            <i data-lucide="bar-chart-3"></i>
+                            <span>Dashboard Ventas</span>
+                        </a>
+                        <a href="crm.html" class="dropdown-item">
+                            <i data-lucide="users"></i>
+                            <span>CRM Oportunidades</span>
+                        </a>
+                        <a href="ordenes.html" class="dropdown-item">
+                            <i data-lucide="clipboard-list"></i>
+                            <span>Órdenes Pendientes</span>
+                        </a>
+                        <a href="crm-data.html" class="dropdown-item active">
+                            <i data-lucide="database"></i>
+                            <span>CRM Datos Raw</span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="brand-title">CRM DATOS CONSULTA</h1>
+                    <div class="last-update">
+                        Vista completa de registros
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <img src="logo_caproin_wide.png" alt="Logo CAPROIN" class="main-logo"
+                    style="height: 40px; filter: brightness(1.2);">
+            </div>
+        </header>
+
+        <main class="content-panel">
+            <div class="filter-panel" style="justify-content: space-between;">
+                <div class="search-container">
+                    <i data-lucide="search" style="color: var(--cyan); width: 18px;"></i>
+                    <input type="text" id="search-input" class="search-input"
+                        placeholder="Buscar en todos los campos...">
+                </div>
+                <div class="action-buttons">
+                    <button id="btn-cargar" class="btn-caproin active"><i data-lucide="play"></i> CARGAR API</button>
+                </div>
+            </div>
+
+            <div class="status-bar" id="data-status">
+                Esperando carga de datos...
+            </div>
+
+            <div class="data-table-container">
+                <table id="raw-data-table">
+                    <thead>
+                        <tr>
+                            <th>OPRT_NUMERO</th>
+                            <th>CNTA_NUMERO</th>
+                            <th>NOMBRE_OPORTUNIDAD</th>
+                            <th>MONEDA</th>
+                            <th>CNTO_NUMERO</th>
+                            <th>OBSERVACION</th>
+                            <th>ACTV_NUMERO</th>
+                            <th>ETAPA</th>
+                            <th>AVANCE</th>
+                            <th>CASA</th>
+                            <th>ZONA</th>
+                            <th>FECHA_REGISTRO</th>
+                            <th>PROBABILIDAD</th>
+                            <th>USRIO_PROP_NUMERO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-body">
+                        <!-- Rows injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" id="pagination-controls">
+                <!-- Pagination buttons injected by JS -->
+            </div>
+        </main>
+    </div>
+
+    <script src="crm-data-script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="export-utils.js"></script>
+</body>
+
+</html>
+

@@ -1,0 +1,86 @@
+const fs = require('fs');
+
+function getVal(obj, ...keys) {
+    if (!obj) return null;
+    for (const key of keys) {
+        if (obj[key] !== undefined && obj[key] !== null) return obj[key];
+    }
+    return null;
+}
+
+function fixDecimal(value) {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+        let txt = value.trim().replace(/\./g, '').replace(',', '.');
+        return parseFloat(txt) || 0;
+    }
+    return 0;
+}
+
+function parseRobustDate(dateStr) {
+    if (!dateStr) return new Date(0);
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) return d;
+    // Handle DD/MM/YYYY
+    if (typeof dateStr === 'string' && dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+    return new Date(0);
+}
+
+function normalizeName(name) {
+    if (!name) return "";
+    return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+}
+
+function analyzeCarlos() {
+    const rawData = JSON.parse(fs.readFileSync('temp_invoices.json', 'utf8'));
+    const invoices = rawData.invoices || [];
+    
+    console.log(`Analyzing ${invoices.length} invoices...`);
+    
+    const results = [];
+    invoices.forEach(item => {
+        const inv = item.factura || item.pedido || item;
+        const items = inv.items || [inv];
+        const subtotal = items.reduce((sum, i) => sum + fixDecimal(getVal(i, 'SUBTOTAL', 'VALORCIF')), 0);
+        
+        const rawFecha = getVal(inv, 'FECHA', 'FECHA_FACTURA');
+        const date = parseRobustDate(rawFecha);
+        const num = String(getVal(inv, 'NUMERO') || '');
+        const client = getVal(inv, 'NOMBRE_TERCERO') || '';
+        const vendor = getVal(inv, 'NOMBRE_VENDEDOR') || '';
+        const docType = String(getVal(inv, 'ID_TIPO_DOC', 'TIPO') || '').toUpperCase();
+        
+        if (date.getFullYear() === 2026 && date.getMonth() === 3) {
+            const vName = normalizeName(vendor);
+            if (vName.includes('CORTES') && vName.includes('CARLOS')) {
+                let isEX = docType.includes('EX');
+                
+                // My current adjustment
+                if (num === '729' && client.toUpperCase().includes('AZUCARERA SALVADORENA')) {
+                    isEX = false;
+                }
+                
+                results.push({ num, subtotal, isEX, client, docType });
+            }
+        }
+    });
+    
+    console.log("\n--- CARLOS CORTES APRIL 2026 DASHBOARD STATE ---");
+    let cifSum = 0;
+    let exSum = 0;
+    results.sort((a,b) => a.num.localeCompare(b.num)).forEach(r => {
+        console.log(`${r.num.padEnd(6)} | ${r.isEX ? 'EX ' : 'CIF'} | ${r.subtotal.toLocaleString('es-CO').padStart(12)} | ${r.client}`);
+        if (r.isEX) exSum += r.subtotal;
+        else cifSum += r.subtotal;
+    });
+    
+    console.log(`\nCIF Total: ${cifSum.toLocaleString('es-CO')}`);
+    console.log(`EX Total:  ${exSum.toLocaleString('es-CO')}`);
+    console.log(`Grand Total: ${(cifSum + exSum).toLocaleString('es-CO')}`);
+}
+
+analyzeCarlos();
