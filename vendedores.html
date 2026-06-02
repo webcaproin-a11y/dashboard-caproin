@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Vendedores - CAPROIN S.A.</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="caproin-theme">
+    <div class="app-shell">
+        <!-- Header Section -->
+        <header class="caproin-header">
+            <div class="header-left">
+                <!-- Hamburger Menu -->
+                <div class="nav-menu-container">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <a href="index.html" class="dropdown-item">
+                            <i data-lucide="bar-chart-3"></i>
+                            <span>Dashboard Ventas</span>
+                        </a>
+                        <a href="vendedores.html" class="dropdown-item active">
+                            <i data-lucide="trending-up"></i>
+                            <span>Análisis Vendedores</span>
+                        </a>
+                        <a href="clientes.html" class="dropdown-item">
+                            <i data-lucide="pie-chart"></i>
+                        <div class="theme-switcher">
+                            <button class="theme-dot cyan active" data-theme="cyan" title="Tema Cyan"></button>
+                            <button class="theme-dot emerald" data-theme="emerald" title="Tema Esmeralda"></button>
+                            <button class="theme-dot gold" data-theme="gold" title="Tema Oro"></button>
+                            <button class="theme-dot light" data-theme="light" title="Tema Claro"></button>
+                        </div>
+                    </div>
+                    <div class="last-update">
+                        Actualizado: <span id="update-timestamp">--/--/----</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-logo-container">
+                <img src="logo_caproin_wide.png" alt="CAPROIN S.A." class="main-logo">
+                <div class="export-buttons">
+                    <button class="btn-export pdf" onclick="exportToPDF()" title="Descargar PDF"><i data-lucide="file-text"></i> PDF</button>
+                    <button class="btn-export excel" onclick="exportToExcel()" title="Descargar Excel"><i data-lucide="file-spreadsheet"></i> EXCEL</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filters Section -->
+        <section class="filter-panel">
+            <div class="filter-group">
+                <label>MES DE ANÁLISIS</label>
+                <div class="input-wrapper">
+                    <input type="month" id="analysis-month">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>VENDEDOR</label>
+                <select id="vendedor">
+                    <option value="all">Todos</option>
+                </select>
+            </div>
+            <div class="action-buttons">
+                <button id="btn-cargar" class="btn-caproin active"><i data-lucide="play"></i> CARGAR API</button>
+                <button id="btn-demo" class="btn-caproin">MODO DEMO</button>
+                <button id="btn-reset" class="btn-caproin" style="display: none; color: var(--danger);"><i
+                        data-lucide="x"></i> LIMPIAR FILTROS</button>
+            </div>
+        </section>
+
+        <div class="status-bar" id="data-status">
+            Esperando carga de datos — <span style="color: var(--cyan);">Análisis exclusivo CIF</span>
+        </div>
+
+        <main class="dashboard-grid">
+
+            <!-- Performance Section -->
+            <div class="section-title">DESEMPEÑO MENSUAL (CIF)</div>
+            <div class="visuals-row">
+                <!-- Table -->
+                <div class="list-box card-3d">
+                    <div class="list-box-header">
+                        <h3>CUMPLIMIENTO POR VENDEDOR</h3>
+                        <p>Venta Real vs Presupuesto CIF mensual</p>
+                    </div>
+                    <div class="client-table-wrapper">
+                        <table id="performance-table">
+                            <thead>
+                                <tr>
+                                    <th>VENDEDOR</th>
+                                    <th style="text-align: right;">PRESUPUESTO</th>
+                                    <th style="text-align: right;">VENTA REAL</th>
+                                    <th style="text-align: right;">% CUMP.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected by script -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="chart-box card-3d">
+                    <div class="chart-box-header">
+                        <h3>COMPARATIVA REAL VS META</h3>
+                        <p>Visualización del cumplimiento CIF</p>
+                    </div>
+                    <div class="chart-area" style="height: 350px;">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client & Brand Analysis Section -->
+            <div class="section-title">ANÁLISIS DE CLIENTES Y MARCAS (MES SELECCIONADO)</div>
+            <div class="visuals-row">
+                <div class="chart-box card-3d">
+                    <div class="chart-box-header">
+                        <h3>VENTA POR CLIENTE</h3>
+                        <p>Top clientes en el periodo (CIF)</p>
+                    </div>
+                    <div class="chart-area" style="height: 300px;">
+                        <canvas id="clientSalesChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box card-3d">
+                    <div class="chart-box-header">
+                        <h3>PARTICIPACIÓN POR MARCA</h3>
+                        <p>Distribución de ventas CIF por marca</p>
+                    </div>
+                    <div class="chart-area" style="height: 300px;">
+                        <canvas id="brandParticipationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">DESGLOSE DETALLADO DE PRODUCTOS</div>
+            <div class="visuals-row">
+                <div class="list-box card-3d" style="width: 100%;">
+                    <div class="list-box-header">
+                        <h3>LISTADO DE ÍTEMS FACTURADOS</h3>
+                        <p>Desglose completo de productos y valores CIF por cliente</p>
+                    </div>
+                    <div class="client-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                        <table id="items-table">
+                            <thead>
+                                <tr>
+                                    <th>CUENTA / CLIENTE</th>
+                                    <th>PRODUCTO / DESCRIPCIÓN</th>
+                                    <th style="text-align: right;">VALOR CIF</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected by script -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="vendedores-script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="export-utils.js"></script>
+</body>
+
+</html>
+
