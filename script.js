@@ -63,7 +63,6 @@ let activeFilters = {
     marca: 'all',
     month: null // YYYY-MM
 };
-
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
@@ -71,6 +70,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
     loadDataFromApi();
 });
+
+function setDefaultMonth() {
+    const now = new Date();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const yearMonth = `${now.getFullYear()}-${month}`;
+    
+    // Protección: evita el error si el elemento no existe en el index.html
+    const monthInput = document.getElementById('analysis-month');
+    if (monthInput) {
+        monthInput.value = yearMonth;
+    }
+    activeFilters.month = yearMonth;
+}
+
 
 // Helper for case-insensitive and alternative field access
 function getVal(obj, ...keys) {
@@ -89,19 +102,26 @@ function setDefaultMonth() {
     const now = new Date();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     const yearMonth = `${now.getFullYear()}-${month}`;
-    document.getElementById('analysis-month').value = yearMonth;
+    const monthInput = document.getElementById('analysis-month');
+    if (monthInput) {
+        monthInput.value = yearMonth;
+    }
     activeFilters.month = yearMonth;
+}
 }
 
 function initEventListeners() {
     document.getElementById('btn-cargar').addEventListener('click', loadDataFromApi);
     document.getElementById('btn-demo').addEventListener('click', loadDemoData);
     document.getElementById('btn-reset').addEventListener('click', resetFilters);
-
-    document.getElementById('analysis-month').addEventListener('change', (e) => {
-        activeFilters.month = e.target.value;
-        updateDashboard();
-    });
+const analysisMonthInput = document.getElementById('analysis-month');
+        if (analysisMonthInput) {
+            analysisMonthInput.addEventListener('change', (e) => {
+                activeFilters.month = e.target.value;
+                updateDashboard();
+            });
+        }
+  
 
     document.getElementById('vendedor').addEventListener('change', (e) => {
         activeFilters.vendedor = e.target.value;
