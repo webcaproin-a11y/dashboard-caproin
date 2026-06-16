@@ -66,17 +66,22 @@ let activeFilters = {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    setDefaultMonth();
+    
+    // Asigna el mes actual al filtro directamente sin tocar el HTML
+    const now = new Date();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    activeFilters.month = `${now.getFullYear()}-${month}`;
+
     initEventListeners();
     loadDataFromApi();
 });
+
 function setDefaultMonth() {
     // Función vaciada para evitar bloqueos con el HTML viejo
     const now = new Date();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
     activeFilters.month = `${now.getFullYear()}-${month}`;
 }
-
 
 
 // Helper for case-insensitive and alternative field access
@@ -103,18 +108,17 @@ function setDefaultMonth() {
     activeFilters.month = yearMonth;
 }
 }
-
 function initEventListeners() {
     document.getElementById('btn-cargar').addEventListener('click', loadDataFromApi);
     document.getElementById('btn-demo').addEventListener('click', loadDemoData);
     document.getElementById('btn-reset').addEventListener('click', resetFilters);
-const analysisMonthInput = document.getElementById('analysis-month');
-        if (analysisMonthInput) {
-            analysisMonthInput.addEventListener('change', (e) => {
-                activeFilters.month = e.target.value;
-                updateDashboard();
-            });
-        }
+    
+    document.getElementById('vendedor').addEventListener('change', (e) => {
+        activeFilters.vendedor = e.target.value;
+        updateDashboard();
+    });
+}
+
   
 
     document.getElementById('vendedor').addEventListener('change', (e) => {
