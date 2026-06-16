@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DASHBOARD CAPROIN</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <!-- html2canvas – for table screenshot -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- SheetJS (xlsx) for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <!-- Leaflet CSS & JS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <!-- Choices.js para filtros múltiples -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <style>
+        /* MOBILE RESPONSIVE MEDIA QUERIES (UNDER 768px) */
+        @media (max-width: 768px) {
+            /* General layouts stacking */
+            .app-shell {
+                padding: 10px !important;
+            }
+            .caproin-header {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                gap: 12px !important;
+                padding: 15px !important;
+            }
+            .header-left, .header-center, .header-right {
+                width: 100% !important;
+                justify-content: center !important;
+                text-align: center !important;
+                float: none !important;
+            }
+            .main-logo {
+                margin: 0 auto 10px !important;
+                max-width: 150px !important;
+            }
+            .export-buttons {
+                justify-content: center !important;
+                gap: 5px !important;
+            }
+            .brand-title {
+                font-size: 1.8rem !important;
+                letter-spacing: -1px !important;
+            }
+            .last-update {
+                font-size: 0.75rem !important;
+            }
+
+            /* Responsive Navigation Pills / Tabs */
+            .nav-menu-container {
+                position: relative !important;
+                width: 100% !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+            .menu-toggle {
+                display: none !important; /* Hide hamburger and show pills directly */
+            }
+            .dropdown-menu {
+                position: static !important;
+                display: flex !important;
+                flex-direction: row !important; /* Horizontally aligned on mobile */
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 8px !important;
+                width: 100% !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                animation: none !important;
+            }
+            .dropdown-item {
+                flex: 1 1 auto !important;
+                min-width: 110px !important;
+                justify-content: center !important;
+                background-color: var(--bg-card) !important;
+                border: 1px solid var(--border) !important;
+                border-radius: 20px !important;
+                padding: 8px 12px !important;
+                font-size: 0.75rem !important;
+                color: var(--text-gray) !important;
+                gap: 6px !important;
+            }
+            .dropdown-item.active {
+                background-color: var(--accent-dim) !important;
+                border-color: var(--accent) !important;
+                color: var(--accent) !important;
+            }
+
+            /* Filter panel stacking */
+            .filter-panel {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 12px !important;
+                padding: 15px !important;
+                margin-bottom: 15px !important;
+            }
+            .filter-group {
+                width: 100% !important;
+            }
+            .filter-group .input-wrapper, .filter-group select, .filter-group input {
+                width: 100% !important;
+            }
+
+            /* Top visuals and general card elements stacking */
+            .top-visuals-split-row {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 15px !important;
+                width: 100% !important;
+            }
+            .consolidated-column {
+                width: 100% !important;
+                gap: 15px !important;
+            }
+            .consolidated-card {
+                padding: 15px !important;
+            }
+            .consolidated-card-body {
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 15px !important;
+            }
+            .metrics-grid {
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 100% !important;
+                gap: 12px !important;
+            }
+            .metric {
+                align-items: center !important;
+                width: 100% !important;
+            }
+            .metrics-grid .val-real {
+                font-size: 1.6rem !important;
+                text-align: center !important;
+            }
+            .circular-chart-box {
+                margin: 0 auto !important;
+            }
+
+            /* Visual elements rows */
+            .visuals-row, .visuals-row-2, .visuals-row-3, .visuals-row-1 {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 15px !important;
+                width: 100% !important;
+            }
+            .chart-box, .list-box {
+                width: 100% !important;
+                padding: 15px !important;
+            }
+            .chart-area {
+                height: 240px !important;
+            }
+            
+            /* Map Section */
+            .visuals-row-1 .chart-box {
+                height: auto !important;
+            }
+            #map {
+                height: 320px !important;
+            }
+
+            /* Titles size reduction */
+            .section-title {
+                font-size: 1.1rem !important;
+                margin-top: 15px !important;
+                margin-bottom: 8px !important;
+            }
+            .chart-box-header h3, .list-box-header h3 {
+                font-size: 0.9rem !important;
+            }
+            .chart-box-header p, .list-box-header p {
+                font-size: 0.55rem !important;
+                margin-bottom: 10px !important;
+            }
+
+            /* Tables horizontal scrolling and typography */
+            .client-table-wrapper {
+                overflow-x: auto !important;
+                width: 100% !important;
+                -webkit-overflow-scrolling: touch;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+            }
+            .client-table-wrapper table {
+                min-width: 650px !important; /* Prevent cell squishing */
+            }
+            .client-table-wrapper th, table:not(.report-table) th {
+                font-size: 0.7rem !important;
+                padding: 4px 6px !important;
+            }
+            .client-table-wrapper td, table:not(.report-table) td {
+                font-size: 0.72rem !important;
+                padding: 6px 6px !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="caproin-theme">
+    <div class="app-shell">
+        <!-- Header Section -->
+        <header class="caproin-header">
+            <div class="header-left">
+
+                <!-- Hamburger Menu -->
+                <div class="nav-menu-container">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <a href="#" id="menu-dashboard-main" class="dropdown-item active">
+                            <i data-lucide="bar-chart-3"></i>
+                            <span>Dashboard Ventas</span>
+                        </a>
+                        <a href="#" id="menu-facturas" class="dropdown-item">
+                            <i data-lucide="search"></i>
+                            <span>Consultar Facturas</span>
+                        </a>
+                        <a href="#" id="menu-reunion" class="dropdown-item">
+                            <i data-lucide="presentation"></i>
+                            <span>Reunión General</span>
+                        </a>
+
+                    </div>
+                </div>
+            </div> <!-- End header-left -->
+
+            <div class="header-center">
+                <h1 class="brand-title">DASHBOARD VENTAS</h1>
+                <div class="last-update">
+                    <i data-lucide="refresh-cw" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px; opacity: 0.6;"></i>
+                    Actualizado: <span id="update-timestamp" style="font-weight: 600;">--/--/----</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <img src="logo_caproin_wide.png" alt="CAPROIN S.A." class="main-logo">
+                <div class="export-buttons">
+                    <button class="btn-export pdf" onclick="exportToPDF()" title="Descargar PDF"><i
+                            data-lucide="file-text"></i> PDF</button>
+                    <button class="btn-export excel" onclick="exportToExcel()" title="Descargar Excel"><i
+                            data-lucide="file-spreadsheet"></i> EXCEL</button>
+                    <button class="btn-export email" id="btn-enviar-reporte" onclick="openEmailModal()"
+                        title="Enviar Reporte"><i data-lucide="mail"></i> ENVIAR</button>
+                </div>
+            </div>
+        </header>
+
+    <!-- Filters Section -->
+    <section class="filter-panel">
+        <div class="filter-group">
+            <label>FECHA INICIAL</label>
+            <div class="input-wrapper">
+                <input type="date" id="date-start" value="2026-02-01">
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>FECHA FINAL</label>
+            <div class="input-wrapper">
+                <input type="date" id="date-end" value="2026-02-24">
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>VENDEDOR</label>
+            <select id="vendedor">
+                <option value="all">Todos</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>TIPO</label>
+            <select id="tipo">
+                <option value="all">Todos</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>MES</label>
+            <select id="mes">
+                <option value="all">Todos</option>
+                <option value="1">Enero</option>
+                <option value="2">Febrero</option>
+                <option value="3">Marzo</option>
+                <option value="4">Abril</option>
+                <option value="5">Mayo</option>
+                <option value="6">Junio</option>
+                <option value="7">Julio</option>
+                <option value="8">Agosto</option>
+                <option value="9">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>AÑO</label>
+            <select id="anio">
+                <option value="all">Todos</option>
+            </select>
+        </div>
+        <div class="action-buttons">
+            <button id="btn-cargar" class="btn-caproin active"><i data-lucide="play"></i> CARGAR</button>
+            <button id="btn-demo" class="btn-caproin">DEMO</button>
+            <button id="btn-api" class="btn-caproin"><i data-lucide="link"></i> API</button>
+            <button id="btn-reset" class="btn-caproin" style="display: none; color: var(--danger);"><i
+                    data-lucide="x"></i> LIMPIAR FILTROS</button>
+        </div>
+    </section>
+
+    <div class="status-bar">
+        Sin filtros activos — carga datos para comenzar
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <main id="main-dashboard" class="dashboard-grid">
+
+        <!-- Consolidated Section Header -->
+        <div class="section-title">CONSOLIDADOS Y EVOLUCIÓN DE VENTAS</div>
+
+        <!-- Consolidated & Evolution Row -->
+        <div class="top-visuals-split-row">
+            <div class="consolidated-column">
+                <div class="consolidated-card">
+                    <div class="card-header">
+                        <span class="tag">VENTA AÑO ACUMULADA</span>
+                        <span class="tag-year">2026</span>
+                    </div>
+                    <div class="consolidated-card-body">
+                        <div class="metrics-grid">
+                            <div class="metric metric-important">
+                                <label>FACTURACIÓN CIF</label>
+                                <span class="val-real" id="ytd-fact-cif">$0.0 M</span>
+                                <span class="val-meta" id="ytd-fact-cif-budget">Meta: $0.0 M</span>
+                                <span class="val-cump" id="ytd-fact-cif-cump">0.0 %</span>
+                            </div>
+                            <div class="metric">
+                                <label>VENTAS FOB</label>
+                                <span class="val-real" id="ytd-com-ex">$0.0 M</span>
+                                <span class="val-meta" id="ytd-com-ex-budget">Meta: $0.0 M</span>
+                                <span class="val-cump" id="ytd-com-ex-cump">0.0 %</span>
+                            </div>
+                            <div class="metric">
+                                <label>TOTAL</label>
+                                <span class="val-real" id="ytd-total">$0.0 M</span>
+                                <span class="val-meta" id="ytd-total-budget">Meta: $0.0 M</span>
+                                <span class="val-cump" id="ytd-total-cump">0.0 %</span>
+                            </div>
+                            <div class="metric highlight">
+                                <label>MARGEN %</label>
+                                <span class="val-real" id="ytd-margen">0.00 %</span>
+                            </div>
+                        </div>
+                        <div class="circular-chart-box">
+                            <canvas id="ytd-progress-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="consolidated-card highlight-card">
+                    <div class="card-header">
+                        <span class="tag" style="background-color: var(--cyan); color: var(--bg-darkest);">FACTURACIÓN CIF</span>
+                        <span class="tag-year" id="sel-period-date">--</span>
+                    </div>
+                    <div class="consolidated-card-body">
+                        <div class="metrics-grid">
+                            <div class="metric metric-important">
+                                <label>FACTURACIÓN CIF</label>
+                                <span class="val-real" id="sel-fact-cif">$0.0 M</span>
+                                <span class="val-meta" id="sel-fact-cif-budget">Meta: $0.0 M</span>
+                                <span class="val-cump" id="sel-fact-cif-cump">0.0 %</span>
+                            </div>
+                            <div class="metric">
+                                <label>VENTAS FOB</label>
+                                <span class="val-real" id="sel-com-ex">$0.0 M</span>
+                                <span class="val-meta" id="sel-com-ex-budget">Meta: $0.0 M</span>
+                                <span class="val-cump" id="sel-com-ex-cump">0.0 %</span>
+                            </div>
+                            <div class="metric">
+                                <label>TOTAL</label>
+                                <span class="val-real" id="sel-total">$0.0 M</span>
+                                <span class="val-meta" id="sel-total-budget">Meta: $0.0 M</span>
+                                <span class="val-cump" id="sel-total-cump">0.0 %</span>
+                            </div>
+                            <div class="metric highlight">
+                                <label>MARGEN %</label>
+                                <span class="val-real" id="sel-margen">0.00 %</span>
+                            </div>
+                        </div>
+                        <div class="circular-chart-box">
+                            <canvas id="period-progress-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-box top-chart-box">
+                <div class="chart-box-header">
+                    <h3>VENTAS MENSUALES</h3>
+                    <p>Subtotal acumulado por mes — año en curso</p>
+                </div>
+                <div class="chart-area">
+                    <canvas id="monthlySalesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla Consolidada (CIF + FOB) -->
+        <div class="visuals-row-1">
+            <div id="consolidated-box" class="list-box" style="border-top: 2px solid var(--orange);">
+                <div class="list-box-header">
+                    <div style="text-align: center; width: 100%;">
+                        <h3 style="font-family: Arial, sans-serif !important; font-size: 20px !important; margin: 0; padding-bottom: 5px;">TABLA VENDEDORES: CONSOLIDADO CIF + FOB</h3>
+                        <p style="margin: 0; padding-bottom: 10px;">Detalle unificado de ventas y presupuestos totales</p>
+                    </div>
+                </div>
+                <div class="client-table-wrapper">
+                    <table id="vendors-consolidated-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="vertical-align: middle; text-align: center;">VENDEDOR</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">VENTA</th>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle; background: rgba(0, 236, 255, 0.05);">SUMA CIF+FOB</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">PRESUPUESTO</th>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle; background: rgba(255, 157, 0, 0.05);">PRESUP. TOTAL</th>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle;">% CUMP</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align: center;">CIF</th>
+                                <th style="text-align: center;">FOB</th>
+                                <th style="text-align: center;">CIF</th>
+                                <th style="text-align: center;">FOB</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items inyectados por script -->
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid #81d4fa; font-weight: bold; background: #e1f5fe;">
+                                <td style="text-align: center;">TOTAL GENERAL</td>
+                                <td id="total-cons-venta-cif" style="text-align: right; color: var(--text-white);">$ 0</td>
+                                <td id="total-cons-venta-ex" style="text-align: right; color: var(--text-white);">$ 0</td>
+                                <td id="total-cons-venta-total" style="text-align: right; color: var(--accent); font-weight: 800;">$ 0</td>
+                                <td id="total-cons-budget-cif" style="text-align: right; color: var(--text-dim);">$ 0</td>
+                                <td id="total-cons-budget-ex" style="text-align: right; color: var(--text-dim);">$ 0</td>
+                                <td id="total-cons-budget-total" style="text-align: right; color: var(--orange);">$ 0</td>
+                                <td id="total-cons-cump" style="text-align: right; font-weight: 900; font-size: 0.9rem;">-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">ANÁLISIS DE MARGEN</div>
+        <div class="visuals-row-2">
+            <div class="list-box">
+                <div class="list-box-header">
+                    <h3>MARGEN POR ZONA Y VENDEDOR</h3>
+                    <p>Rentabilidad detallada por equipo comercial</p>
+                </div>
+                <div class="client-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                    <table id="margin-summary-table" class="detalle-table">
+                        <thead>
+                            <tr>
+                                <th>ZONA / VENDEDOR</th>
+                                <th style="text-align: right;">VENTA</th>
+                                <th style="text-align: right;">COSTO</th>
+                                <th style="text-align: center;">MARGEN %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="chart-box">
+                <div class="chart-box-header">
+                    <h3>EVOLUCIÓN DEL MARGEN %</h3>
+                    <p>Tendencia de rentabilidad por mes</p>
+                </div>
+                <div class="chart-area">
+                    <canvas id="marginEvolutionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">PRINCIPALES CLIENTES</div>
+        <div class="visuals-row-3" style="grid-template-columns: 1fr; margin-bottom: 20px;">
+            <div class="list-box">
+                <div class="list-box-header">
+                    <h3>TOP 10 CLIENTES</h3>
+                    <p>Por subtotal de ventas</p>
+                </div>
+                <div class="client-table-wrapper">
+                    <table id="top-clients-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>CLIENTE</th>
+                                <th>VENTAS</th>
+                                <th>PART.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items injected by script -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="section-title">VENDEDORES & MARCAS</div>
+        <div class="visuals-row-3" style="grid-template-columns: 1fr; margin-bottom: 20px;">
+            <div class="list-box">
+                <div class="list-box-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h3>ÚLTIMAS FACTURAS</h3>
+                            <p>Detalle de las 10 transacciones más recientes con desglose de items</p>
+                        </div>
+                        <span class="tag orange">DETALLE COMPLETO</span>
+                    </div>
+                </div>
+                <div class="client-table-wrapper" style="max-height: 450px; overflow-y: auto;">
+                    <table id="recent-invoices-table" class="detalle-table">
+                        <thead>
+                            <tr>
+                                <th width="30"></th>
+                                <th>FECHA</th>
+                                <th>TIPO</th>
+                                <th>NÚMERO</th>
+                                <th>CLIENTE</th>
+                                <th style="text-align: right;">VENTA</th>
+                                <th style="text-align: right;">COSTO</th>
+                                <th style="text-align: center;">MARGEN %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="visuals-row">
+            <div class="chart-box">
+                <div class="chart-box-header">
+                    <h3>VENTAS por VENDEDOR</h3>
+                    <p>Haz clic para filtrar</p>
+                </div>
+                <div class="chart-area" style="height: 350px;">
+                    <canvas id="vendorSalesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-box-header">
+                    <h3>VENTAS por MARCA</h3>
+                    <p>Haz clic para filtrar</p>
+                </div>
+                <div class="chart-area" style="height: 350px;">
+                    <canvas id="brandSalesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="visuals-row-2">
+            <div class="list-box">
+                <div class="list-box-header">
+                    <h3>TABLA VENDEDORES</h3>
+                    <p>Detalle CIF vs FOB</p>
+                </div>
+                <div class="client-table-wrapper">
+                    <table id="vendors-summary-table">
+                        <thead>
+                            <tr>
+                                <th>VENDEDOR</th>
+                                <th style="text-align: right;">PRESUP.</th>
+                                <th style="text-align: right;">CIF (REAL)</th>
+                                <th style="text-align: right;">% CUMP</th>
+                                <th style="text-align: right;">EX</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items injected by script -->
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid var(--cyan-mid); font-weight: bold;">
+                                <td>TOTAL</td>
+                                <td id="total-vendor-budget"
+                                    style="text-align: right; color: var(--text-dim); font-size: 0.75rem;">$0</td>
+                                <td id="total-vendor-cif" style="text-align: right;">$0</td>
+                                <td id="total-vendor-cump" style="text-align: right; font-weight: 800;">-</td>
+                                <td id="total-vendor-ex" style="text-align: right; color: var(--orange);">$0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tabla de Cumplimiento Acumulada -->
+            <div class="list-box">
+                <div class="list-box-header">
+                    <h3>TABLA DE CUMPLIMIENTO ACUMULADA</h3>
+                    <p>Resumen anual acumulado (YTD)</p>
+                </div>
+                <div class="client-table-wrapper">
+                    <table id="accumulated-summary-table">
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th>
+                                <th style="text-align: right;">Presupuesto año</th>
+                                <th style="text-align: right;">CIF real año</th>
+                                <th style="text-align: right;">% cump año</th>
+                                <th style="text-align: right;">Presupuesto Mes acum</th>
+                                <th style="text-align: right;">CIF real acum mes</th>
+                                <th style="text-align: right;">% cump mes</th>
+                                <th style="text-align: right;">FOB facturado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items injected by script -->
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid var(--cyan-mid); font-weight: bold;">
+                                <td>TOTAL</td>
+                                <td id="total-acc-budget"
+                                    style="text-align: right; color: var(--text-dim); font-size: 0.75rem;">$0</td>
+                                <td id="total-acc-cif" style="text-align: right;">$0</td>
+                                <td id="total-acc-cump" style="text-align: right; font-weight: 800;">-</td>
+                                <td id="total-acc-budget-meses"
+                                    style="text-align: right; color: var(--text-dim); font-size: 0.75rem;">$0</td>
+                                <td id="total-acc-cif-meses" style="text-align: right;">$0</td>
+                                <td id="total-acc-cump-meses" style="text-align: right; font-weight: 800;">-</td>
+                                <td id="total-acc-ex" style="text-align: right; color: var(--orange);">$0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Map Section -->
+        <div class="section-title">UBICACIÓN GEOGRÁFICA DE CLIENTES</div>
+        <div class="visuals-row-1">
+            <div class="chart-box" style="height: 600px;">
+                <div class="chart-box-header">
+                    <h3>MAPA DE VENTAS POR CLIENTE</h3>
+                    <p>Distribución geográfica basada en direcciones de despacho</p>
+                </div>
+                <div id="map"
+                    style="height: 500px; width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border);">
+                </div>
+            </div>
+        </div>
+
+        <!-- Seccion: Top 5 Clientes por Zona -->
+        <div class="section-title" id="zonal-section-title">TOP 5 CLIENTES POR ZONA</div>
+        
+        <!-- Filtros locales -->
+        <section class="filter-panel" id="zonal-filter-panel" style="margin-bottom: 15px; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; gap: 15px; width: 100%;">
+            <div class="filter-group">
+                <label>ZONA</label>
+                <select id="zonal-filter-zona">
+                    <option value="01">Zona 1 - Yumbo</option>
+                    <option value="02">Zona 2 - Medellín</option>
+                    <option value="03">Zona 3 - Barranquilla</option>
+                    <option value="04">Zona 4 - Bogotá</option>
+                    <option value="05">Zona 5 - Eje Cafetero</option>
+                    <option value="06">Zona 6 - Bucaramanga</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>MES</label>
+                <select id="zonal-filter-mes">
+                    <option value="all">Todos</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>AÑO</label>
+                <select id="zonal-filter-anio">
+                    <option value="all">Todos</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                </select>
+            </div>
+        </section>
+
+        <div class="visuals-row-1" id="zonal-section-container">
+            <div class="list-box" style="border-top: 2px solid var(--brand-red); width: 100%;">
+                <div class="list-box-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h3>TOP 5 CLIENTES POR ZONA</h3>
+                        <p>Análisis detallado de facturación, costos, márgenes y desglose de productos comprados</p>
+                    </div>
+                    <button class="btn-export excel" onclick="exportZonalTableToExcel()" title="Exportar esta tabla a Excel" style="padding: 6px 12px !important; font-size: 0.75rem !important; display: flex; align-items: center; gap: 6px; cursor: pointer; border-radius: var(--radius-sm);">
+                        <i data-lucide="file-spreadsheet" style="width: 14px; height: 14px;"></i> EXCEL
+                    </button>
+                </div>
+                <div class="client-table-wrapper" style="overflow-x: auto;">
+                    <table id="zonal-top-clients-table">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border); background: rgba(0, 0, 0, 0.02);">
+                                <th style="width: 40px; text-align: center;"></th>
+                                <th>Nombre del Cliente</th>
+                                <th style="text-align: right;">Ventas CIF</th>
+                                <th style="text-align: right;">Ventas FOB</th>
+                                <th style="text-align: right; font-weight: bold; color: var(--brand-red);">Total Facturado</th>
+                                <th style="text-align: right;">Costo Total</th>
+                                <th style="text-align: center; width: 200px;">Margen Total (Monto y %)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="zonal-top-clients-tbody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-dim);">
+                                    Cargue datos para ver la información.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copia de Tabla Consolidada (40% de ancho) al final del dashboard -->
+        <div class="visuals-row-1" style="display: flex; justify-content: flex-start; width: 100%; margin-top: 20px;">
+            <div id="consolidated-box-copy" class="list-box" style="border-top: 2px solid var(--orange); width: 40% !important; min-width: 400px; box-sizing: border-box;">
+                <div class="list-box-header">
+                    <div style="text-align: center; width: 100%;">
+                        <h3 style="font-family: Arial, sans-serif !important; font-size: 20px !important; margin: 0; padding-bottom: 5px;">TABLA VENDEDORES: CONSOLIDADO CIF + FOB (COPIA)</h3>
+                        <p style="margin: 0; padding-bottom: 10px;">Detalle unificado de ventas y presupuestos totales</p>
+                    </div>
+                </div>
+                <div class="client-table-wrapper" style="overflow-x: auto;">
+                    <table id="vendors-consolidated-table-copy">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="vertical-align: middle; text-align: center;">VENDEDOR</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">VENTA</th>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle; background: rgba(0, 236, 255, 0.05);">SUMA CIF+FOB</th>
+                                <th colspan="2" style="text-align: center; border-bottom: 1px solid var(--border);">PRESUPUESTO</th>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle; background: rgba(255, 157, 0, 0.05);">PRESUP. TOTAL</th>
+                                <th rowspan="2" style="text-align: center; vertical-align: middle;">% CUMP</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align: center;">CIF</th>
+                                <th style="text-align: center;">FOB</th>
+                                <th style="text-align: center;">CIF</th>
+                                <th style="text-align: center;">FOB</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Items inyectados por script -->
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid #81d4fa; font-weight: bold; background: #e1f5fe;">
+                                <td style="text-align: center;">TOTAL GENERAL</td>
+                                <td id="total-cons-venta-cif-copy" style="text-align: right; color: var(--text-white);">$ 0</td>
+                                <td id="total-cons-venta-ex-copy" style="text-align: right; color: var(--text-white);">$ 0</td>
+                                <td id="total-cons-venta-total-copy" style="text-align: right; color: var(--accent); font-weight: 800;">$ 0</td>
+                                <td id="total-cons-budget-cif-copy" style="text-align: right; color: var(--text-dim);">$ 0</td>
+                                <td id="total-cons-budget-ex-copy" style="text-align: right; color: var(--text-dim);">$ 0</td>
+                                <td id="total-cons-budget-total-copy" style="text-align: right; color: var(--orange);">$ 0</td>
+                                <td id="total-cons-cump-copy" style="text-align: right; font-weight: 900; font-size: 0.9rem;">-</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Facturas Search Dashboard -->
+    <main id="facturas-dashboard" class="dashboard-grid" style="display: none;">
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; font-family: 'Inter', sans-serif;">
+            <span>CONSULTAR FACTURAS DETALLADO</span>
+            <span class="tag orange">Buscador de Productos</span>
+        </div>
+
+        <section class="filter-panel" style="border: 1px solid var(--cyan-dim); margin-bottom: 25px; flex-wrap: wrap;">
+            <div class="filter-group">
+                <label>CLIENTE</label>
+                <div class="input-wrapper">
+                    <input type="text" id="fact-search-cliente" list="fact-clientes-list" placeholder="Seleccione o escriba el cliente..." style="min-width: 250px;">
+                    <datalist id="fact-clientes-list"></datalist>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label># FACTURA</label>
+                <div class="input-wrapper">
+                    <input type="text" id="fact-search-numero" placeholder="Ej: FV-1234">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>FECHA INICIAL</label>
+                <div class="input-wrapper">
+                    <input type="date" id="fact-date-start">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>FECHA FINAL</label>
+                <div class="input-wrapper">
+                    <input type="date" id="fact-date-end">
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button id="btn-fact-buscar" class="btn-caproin active"><i data-lucide="search"></i> BUSCAR</button>
+            </div>
+        </section>
+
+        <div class="status-bar" id="fact-status-bar">Use los filtros para buscar facturas específicas</div>
+
+        <div class="client-analysis-row">
+            <div class="list-box w-full neon-frame">
+                <div class="list-box-header">
+                    <h3>RESULTADOS DE FACTURACIÓN</h3>
+                    <p id="fact-results-count">Se muestran ítems encontrados</p>
+                </div>
+                <div class="client-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                    <table id="table-facturas-busqueda">
+                        <thead>
+                            <tr>
+                                <th style="width: 30px; text-align: center;"></th>
+                                <th>FECHA</th>
+                                <th>TIPO</th>
+                                <th>NÚMERO</th>
+                                <th>CLIENTE</th>
+                                <th>VENDEDOR</th>
+                                <th style="text-align: right;">SUBTOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-facturas-busqueda">
+                            <tr><td colspan="7" style="text-align: center; padding: 40px;">Presione buscar...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="client-analysis-row" style="margin-top: 25px; display: flex; justify-content: flex-end; width: 100%;">
+            <div class="list-box neon-frame" style="width: 40%; min-width: 380px; box-sizing: border-box; padding: 15px;">
+                <div class="list-box-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div>
+                        <h3 style="font-size: 0.95rem; font-weight: bold; margin: 0;">DETALLE CIF Y FOB</h3>
+                        <p style="font-size: 0.6rem; margin: 2px 0 0 0;">Comparativa de Presupuesto vs Real por cada representante</p>
+                    </div>
+                </div>
+                <div class="client-table-wrapper" style="overflow-x: auto; margin-top: 5px;">
+                    <table id="facturas-vendor-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border);">
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; min-width: 140px;">VENDEDOR</th>
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; text-align: right;">PRESUPUESTO</th>
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; text-align: right;">REAL</th>
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; text-align: right; width: 50px;">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Inyectado por JS -->
+                        </tbody>
+                        <tfoot style="font-weight: 800; border-top: 2px solid var(--border); font-size: 0.75rem;">
+                            <tr style="background: rgba(39,174,96,0.1); color: #1e8449;">
+                                <td style="padding: 6px 8px; font-weight: 800; border-right: 1px solid var(--border);">TOTAL GENERAL</td>
+                                <td id="fvt-ppto-tot" style="padding: 6px 8px; text-align: right;">$0</td>
+                                <td id="fvt-real-tot" style="padding: 6px 8px; text-align: right; font-weight: 800;">$0</td>
+                                <td id="fvt-cump-tot" style="padding: 6px 8px; text-align: right; font-weight: 900;">0%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Reunion General Dashboard -->
+    <main id="reunion-dashboard" class="dashboard-grid" style="display: none;">
+        <!-- PANEL DE FILTROS INDEPENDIENTE PARA REUNI"N GENERAL -->
+        <section class="filter-panel" style="margin-bottom: 20px; border: 1px solid var(--border); border-radius: 12px; flex-wrap: wrap;">
+            <div class="filter-group">
+                <label>FECHA INICIAL</label>
+                <div class="input-wrapper">
+                    <input type="date" id="reunion-date-start">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>FECHA FINAL</label>
+                <div class="input-wrapper">
+                    <input type="date" id="reunion-date-end">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>TIPO</label>
+                <select id="reunion-filter-tipo">
+                    <option value="all">Todos</option>
+                    <option value="CIF">CIF</option>
+                    <option value="FOB">FOB</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>MES</label>
+                <select id="reunion-filter-mes" multiple placeholder="Todos">
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>A'O</label>
+                <select id="reunion-filter-anio" multiple placeholder="Todos"></select>
+            </div>
+            <div class="filter-group">
+                <label>ZONA</label>
+                <select id="reunion-filter-zona">
+                    <option value="all">Todas</option>
+                    <option value="01">Zona 1 - Yumbo</option>
+                    <option value="02">Zona 2 - Medelln</option>
+                    <option value="03">Zona 3 - Barranquilla</option>
+                    <option value="04">Zona 4 - Bogotǭ</option>
+                    <option value="05">Zona 5 - Eje Cafetero</option>
+                    <option value="06">Zona 6 - Bucaramanga</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>VENDEDOR</label>
+                <select id="reunion-filter-vendedor">
+                    <option value="all">Todos</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>MARCA</label>
+                <select id="reunion-filter-marca">
+                    <option value="all">Todas</option>
+                </select>
+            </div>
+        </section>
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; font-family: 'Inter', sans-serif;">
+            <span>REUNIÓN GENERAL - RESUMEN EJECUTIVO</span>
+            <span class="tag orange">Revisión Alta Gerencia</span>
+        </div>
+
+        <!-- Section 1: KPIs principales + Gráfico Resumen Ejecutivo General -->
+        <div class="reunion-summary-container" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 28px;">
+            <!-- Izquierda: Gráfico -->
+            <div class="chart-box" style="border-top: 3px solid #e67e22; flex: 1.2; min-width: 320px; margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="chart-box-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3>RESUMEN GENERAL: EJECUTADO VS PRESUPUESTOS (CIF + FOB)</h3>
+                        <p>Comparación de Ventas Totales Reales, Presupuesto Acumulado del Periodo y Presupuesto Total Anual</p>
+                    </div>
+                    <span class="tag orange" id="reunion-resumen-cump-badge" style="font-weight: 800; font-size: 0.85rem; padding: 4px 12px;">CUMP: 0.0%</span>
+                </div>
+                <div class="chart-area" style="flex: 1; min-height: 280px; position: relative; max-width: 650px; margin: 0 auto; width: 100%;">
+                    <canvas id="chart-reunion-resumen-general"></canvas>
+                </div>
+            </div>
+
+            <!-- Derecha: Resúmenes Ejecutivos (KPIs) -->
+            <div class="consolidated-card" style="border-top: 3px solid #D22630; flex: 0.9; min-width: 340px; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border);">
+                <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border);">
+                    <span class="tag" style="background:rgba(210,38,48,0.08); color:#D22630; border-color:rgba(210,38,48,0.2); font-weight: bold;">COMPARATIVA PRESUPUESTO VS REAL</span>
+                    <span class="tag" style="background:rgba(39,174,96,0.08); color:#27ae60; border-color:rgba(39,174,96,0.2); font-weight: bold;">ACUMULADO</span>
+                </div>
+                
+                <!-- Contenedor de dos columnas dentro de la tarjeta de KPIs -->
+                <div style="display: flex; gap: 15px; flex: 1; align-items: center;">
+                    <!-- Columna Izquierda: Ventas Totales (Grande) -->
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid var(--border); padding-right: 15px; height: 100%; min-height: 250px;">
+                        <label style="font-size:0.7rem; color:#707372; font-weight:800; letter-spacing:0.5px; text-transform: uppercase; text-align: center; margin-bottom: 8px; line-height: 1.3;">VENTAS TOTALES<br>CIF + FOB</label>
+                        <span id="reunion-total-ventas-cif-fob" style="font-size:1.8rem; font-weight:900; color:#27ae60; text-align: center; display: block; line-height: 1.2;">$0.0 M</span>
+                    </div>
+
+                    <!-- Columna Derecha: Detalle vertical original -->
+                    <div style="flex: 1.1; display: grid; grid-template-rows: repeat(4, 1fr); gap: 12px; justify-content: stretch;">
+                        <div class="metric" style="border-bottom: 1px dashed var(--border); padding-bottom: 4px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                            <label style="font-size:0.62rem; color:#707372; font-weight:700; letter-spacing:0.5px; display: block; margin-bottom: 2px;">PRESUPUESTO CIF</label>
+                            <span id="reunion-meta-lbl-cif" style="font-size:0.58rem; color:#b2b4b2; display: block; margin-bottom: 2px;">Meta -- meses</span>
+                            <span class="val-real" id="reunion-budget-cif" style="font-size:1.3rem; font-weight:800; color:#4a4d50; display: block;">$0.0 M</span>
+                        </div>
+                        <div class="metric" style="border-bottom: 1px dashed var(--border); padding-bottom: 4px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                            <label style="font-size:0.62rem; color:#707372; font-weight:700; letter-spacing:0.5px; display: block; margin-bottom: 2px;">VENTAS CIF REAL</label>
+                            <span style="font-cump" id="reunion-cump-cif" style="font-size:0.8rem; font-weight:900; margin-bottom: 2px; display: block;">0.0 %</span>
+                            <span class="val-real" id="reunion-venta-cif" style="font-size:1.3rem; font-weight:800; color:#4a4d50; display: block;">$0.0 M</span>
+                        </div>
+                        <div class="metric" style="border-bottom: 1px dashed var(--border); padding-bottom: 4px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                            <label style="font-size:0.62rem; color:#707372; font-weight:700; letter-spacing:0.5px; display: block; margin-bottom: 2px;">PRESUPUESTO FOB</label>
+                            <span id="reunion-meta-lbl-fob" style="font-size:0.58rem; color:#b2b4b2; display: block; margin-bottom: 2px;">Meta -- meses</span>
+                            <span class="val-real" id="reunion-budget-fob" style="font-size:1.3rem; font-weight:800; color:#4a4d50; display: block;">$0.0 M</span>
+                        </div>
+                        <div class="metric" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+                            <label style="font-size:0.62rem; color:#707372; font-weight:700; letter-spacing:0.5px; display: block; margin-bottom: 2px;">VENTAS FOB REAL</label>
+                            <span style="font-cump" id="reunion-cump-fob" style="font-size:0.8rem; font-weight:900; margin-bottom: 2px; display: block;">0.0 %</span>
+                            <span class="val-real" id="reunion-venta-fob" style="font-size:1.3rem; font-weight:800; color:#4a4d50; display: block;">$0.0 M</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos CIF / Combo en fila -->
+        <div class="visuals-row-2" style="grid-template-columns: 1fr 1fr; margin-bottom: 28px;">
+            <div class="chart-box" style="border-top: 3px solid #D22630;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>PRESUPUESTO VS VENTA CIF</h3>
+                        <p>Comparativa directa acumulada 4 meses</p>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 260px;">
+                    <canvas id="chart-reunion-cif"></canvas>
+                </div>
+            </div>
+            <div class="chart-box" style="border-top: 3px solid #27ae60;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>VENTAS MENSUALES CIF + FOB</h3>
+                        <p>Venta real (barras) vs Presupuesto (línea) y % de cumplimiento</p>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 260px;">
+                    <canvas id="chart-reunion-combo"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Evolucin de Margen -->
+        <div class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>EVOLUCIÓN DE MARGEN & COMPARATIVA ANUAL (VENTAS CIF)</span>
+            <div class="metrics-grid" style="margin: 0;">
+                <div class="metric highlight" style="padding: 5px 15px;">
+                    <label style="font-size: 0.7rem;">MARGEN TOTAL PERIODO</label>
+                    <span class="val-real" id="reunion-margen-total" style="font-size: 1.2rem;">0.00 %</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="visuals-row-2" style="grid-template-columns: 1fr 1fr; margin-bottom: 30px;">
+            <div class="chart-box" style="border-top: 3px solid #D22630;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>EVOLUCIÓN DEL MARGEN %</h3>
+                        <p>Tendencia de rentabilidad CIF filtrada</p>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 280px;">
+                    <canvas id="chart-reunion-margin"></canvas>
+                </div>
+            </div>
+            <div class="chart-box" style="border-top: 3px solid #3498db;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>COMPARATIVA VENTAS HISTÓRICAS (CIF + FOB)</h3>
+                        <p>Ventas mensuales por año (2021 - 2026)</p>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 280px;">
+                    <canvas id="chart-reunion-year-comparison"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Análisis de Clientes Top 20 YoY -->
+        <div class="section-title">ANÁLISIS DE CLIENTES (TOP 20 YoY)</div>
+        <div class="visuals-row-2">
+            <div class="list-box">
+                <div class="list-box-header">
+                    <div>
+                        <h3>VENTAS HISTÓRICAS YoY POR CLIENTE</h3>
+                        <p>Comparativa de ventas anuales desde 2021 a 2026 y YoY %</p>
+                    </div>
+                </div>
+                <div class="client-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                    <table id="reunion-top-clientes-cif" class="detalle-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>CLIENTE</th>
+                                <th style="text-align: right;">2021</th>
+                                <th style="text-align: right;">2022</th>
+                                <th style="text-align: right;">2023</th>
+                                <th style="text-align: right;">2024</th>
+                                <th style="text-align: right;">2025</th>
+                                <th style="text-align: right;">2026</th>
+                                <th style="text-align: right;">YoY %</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="list-box">
+                <div class="list-box-header">
+                    <div>
+                        <h3>CRECIMIENTO POR MARCA</h3>
+                        <p>Comparativa Año Anterior vs Actual por marca</p>
+                    </div>
+                </div>
+                <div class="client-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                    <table id="reunion-top-clientes-marca" class="detalle-table">
+                        <thead>
+                            <tr>
+                                <th>MARCA</th>
+                                <th style="text-align: right;">2025</th>
+                                <th style="text-align: right;">2026</th>
+                                <th style="text-align: right;">CRECIMIENTO</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Top Productos por Marca -->
+        <div class="list-box" style="margin-bottom: 24px; grid-column: 1 / -1;">
+            <div class="list-box-header">
+                <div>
+                    <h3>TOP PRODUCTOS POR MARCA</h3>
+                    <p>Los artículos más vendidos (por valor CIF) de cada marca según los filtros activos</p>
+                </div>
+            </div>
+            <div class="brand-products-container" id="reunion-top-products" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 16px;">
+                <!-- Cards per brand generated by JS -->
+            </div>
+        </div>
+
+        <!-- Section 5: Análisis Avanzado -->
+        <div class="section-title" style="border-left: 4px solid #D22630; padding-left: 12px;">ANÁLISIS AVANZADO DE PORTAFOLIO</div>
+
+        <!-- Cuadrantes + Waterfall -->
+        <div class="visuals-row-2" style="grid-template-columns: 1.2fr 0.8fr; margin-bottom: 24px;">
+            <div class="chart-box" style="border-top: 3px solid #D22630;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>ANÁLISIS DE PORTAFOLIO: VENTA vs MARGEN POR CLIENTE</h3>
+                        <p>Clasificación BCG — Eje X: Volumen de Venta CIF &nbsp;|&nbsp; Eje Y: % Margen</p>
+                    </div>
+                </div>
+                <!-- Leyenda de cuadrantes -->
+                <div style="display:flex; gap:12px; margin-bottom:10px; flex-wrap:wrap;">
+                    <span style="font-size:0.62rem; font-weight:700; color:#27ae60; background:rgba(39,174,96,0.08); border:1px solid rgba(39,174,96,0.2); padding:3px 10px; border-radius:20px;">⭐ ESTRELLA: Alto Vol / Alto Margen</span>
+                    <span style="font-size:0.62rem; font-weight:700; color:#D22630; background:rgba(210,38,48,0.08); border:1px solid rgba(210,38,48,0.2); padding:3px 10px; border-radius:20px;">📦 VOLUMEN: Alto Vol / Bajo Margen</span>
+                    <span style="font-size:0.62rem; font-weight:700; color:#ff9d00; background:rgba(255,157,0,0.08); border:1px solid rgba(255,157,0,0.2); padding:3px 10px; border-radius:20px;">💎 NICHO: Bajo Vol / Alto Margen</span>
+                    <span style="font-size:0.62rem; font-weight:700; color:#707372; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); padding:3px 10px; border-radius:20px;">⚠️ REVISAR: Bajo Vol / Bajo Margen</span>
+                </div>
+                <div class="chart-area" style="height: 380px;">
+                    <canvas id="chart-reunion-quadrant"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-box" style="border-top: 3px solid #4a90d9;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>CASCADA DE VENTAS CIF ACUMULADA</h3>
+                        <p>Incremento mensual y acumulado Ene → Abr</p>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 380px;">
+                    <canvas id="chart-reunion-waterfall"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pareto 80/20 -->
+        <div style="margin-bottom: 30px;">
+            <div class="chart-box" style="border-top: 3px solid #7b1fa2;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>ANÁLISIS DE CONCENTRACIÓN (PARETO 80/20) — MARGEN POR MARCA</h3>
+                        <p>Qué marcas generan el 80% del margen bruto total de la compañía en el periodo</p>
+                    </div>
+                    <span class="tag" style="background:rgba(123,31,162,0.08); color:#7b1fa2; border-color:rgba(123,31,162,0.2); white-space:nowrap;">REGLA 80/20</span>
+                </div>
+                <div class="chart-area" style="height: 380px;">
+                    <canvas id="chart-reunion-pareto"></canvas>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Section 7: Resumen Financiero -->
+        <div class="section-title" style="margin-top: 24px; grid-column: 1 / -1; text-align: center; border-left: none;">RESUMEN FINANCIERO DEL PERIODO</div>
+        <div class="visuals-row-1" style="grid-column: 1 / -1; margin-bottom: 40px; display: flex; justify-content: center;">
+            <div class="chart-box" style="border-top: 3px solid #f39c12; width: 40%; min-width: 500px; margin: 0 auto;">
+                <div class="chart-box-header" style="text-align: center;">
+                    <div style="width: 100%;">
+                        <h3>VENTAS, COSTOS, MARGEN Y % MARGEN</h3>
+                        <p>Resumen financiero consolidado del periodo seleccionado (CIF + FOB)</p>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 380px;">
+                    <canvas id="chart-reunion-resumen-finanzas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 8: Resumen por Zonas -->
+        <div class="section-title" style="margin-top: 24px; grid-column: 1 / -1; text-align: center; border-left: none;">RESUMEN Y CUMPLIMIENTO POR ZONAS</div>
+        <div class="visuals-row-2" style="grid-column: 1 / -1; margin-bottom: 40px;">
+            <div class="chart-box" style="border-top: 3px solid #1abc9c;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>PRESUPUESTO VS VENTAS POR ZONAS</h3>
+                        <p>Presupuesto Total (CIF+FOB) y Ventas Totales Reales (CIF+FOB) con % de Cumplimiento</p>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 380px;">
+                    <canvas id="chart-reunion-zonas"></canvas>
+                </div>
+            </div>
+            <div class="list-box" style="border-top: 3px solid #2ecc71;">
+                <div class="list-box-header">
+                    <div>
+                        <h3>TABLA DE CUMPLIMIENTO POR ZONAS</h3>
+                        <p>Resumen financiero consolidado por zona geográfica (CIF + FOB)</p>
+                    </div>
+                </div>
+                <div class="client-table-wrapper" style="max-height: 380px; overflow-y: auto;">
+                    <table id="table-reunion-zonas" class="detalle-table">
+                        <thead>
+                            <tr>
+                                <th>ZONA</th>
+                                <th style="text-align: right;">PRESUPUESTO TOTAL</th>
+                                <th style="text-align: right;">VENTAS REALES</th>
+                                <th style="text-align: right;">% CUMPLIMIENTO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Inyectado por JS -->
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top: 2px solid var(--border); font-weight: bold; background: rgba(0, 0, 0, 0.05);">
+                                <td>TOTAL GENERAL</td>
+                                <td id="rez-total-ppto" style="text-align: right;">$0</td>
+                                <td id="rez-total-real" style="text-align: right;">$0</td>
+                                <td id="rez-total-cump" style="text-align: right; font-weight: 800;">0.0%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 9: Histórico por Marca -->
+        <div class="section-title" style="margin-top: 24px; grid-column: 1 / -1; text-align: center; border-left: none;">EVOLUCIÓN HISTÓRICA POR CASA/MARCA</div>
+        <div class="visuals-row-1" style="grid-column: 1 / -1; margin-bottom: 40px; display: flex; gap: 24px; justify-content: space-between; flex-wrap: wrap; padding: 0 10px;">
+            <!-- Box 1: Histórico por Marca -->
+            <div class="chart-box" style="border-top: 3px solid #7b1fa2; flex: 1; min-width: 450px; margin: 0;">
+                <div class="chart-box-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h3>VENTAS ANUALES POR MARCA (2021 - 2026)</h3>
+                        <p>Evolución de ventas en el periodo 2021 - 2026</p>
+                    </div>
+                    <div>
+                        <select id="reunion-historical-brand-filter" class="filter-select" style="min-width: 180px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); font-weight: 600; font-size: 0.85rem;">
+                            <option value="all">TODAS LAS MARCAS</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-area" style="height: 380px;">
+                    <canvas id="chart-reunion-historical-brand"></canvas>
+                </div>
+            </div>
+
+            <!-- Box 2: Top 5 Marcas -->
+            <div class="chart-box" style="border-top: 3px solid #e67e22; flex: 1; min-width: 450px; margin: 0;">
+                <div class="chart-box-header">
+                    <div>
+                        <h3>TOP 5 MARCAS MÁS REPRESENTATIVAS (CIF)</h3>
+                        <p>Distribución y participación sobre el total de ventas</p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 15px; min-height: 380px;">
+                    <div class="chart-area" style="height: 180px; position: relative; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="chart-reunion-top5-brands-pie" style="max-height: 100%; max-width: 100%;"></canvas>
+                    </div>
+                    <div style="overflow: visible; flex-grow: 1; border-top: 1px solid var(--border); padding-top: 10px;">
+                        <table class="grid-table" style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border);">
+                                    <th style="text-align: left; padding: 4px;">Pos</th>
+                                    <th style="text-align: left; padding: 4px;">Marca</th>
+                                    <th style="text-align: right; padding: 4px;">Ventas CIF</th>
+                                    <th style="text-align: right; padding: 4px;">% Part.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reunion-top5-brands-table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- ======= SECCIÓN DE PEDIDOS FOB MODULE ======= -->
+        <!-- ========================================== -->
+        <div style="display: flex; flex-direction: column; gap: 20px; width: 100%; grid-column: 1 / -1; margin-top: 30px; border-top: 2px solid var(--border); padding-top: 30px;">
+            
+            <!-- Encabezado de la Sección -->
+            <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; font-family: 'Inter', sans-serif; margin-top: 10px; margin-bottom: 5px;">
+                <div>
+                    <span style="font-size: 1.2rem; font-weight: 800; color: var(--text-white);">COMISIONES SOBRE PEDIDOS FOB (CONSOLIDADO)</span>
+                    <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 2px;">Análisis de comisiones generadas, facturadas y marcas en base a Pedidos FOB</div>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn btn-secondary" onclick="document.getElementById('fob-excel-upload').click();" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-panel); color: var(--text-white); cursor: pointer; font-weight: 600; transition: all 0.2s ease;">
+                        <i data-lucide="upload" style="width: 14px; height: 14px;"></i>
+                        Cargar Excel Pedidos FOB
+                    </button>
+                    <input type="file" id="fob-excel-upload" accept=".xlsx" style="display:none">
+                    <span class="tag green" style="background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid rgba(46, 204, 113, 0.3);">Módulo FOB</span>
+                </div>
+            </div>
+
+            <!-- Fila de KPI Cards -->
+            <div class="reunion-summary-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 10px; width: 100%;">
+                <!-- Card 1: Comisiones Generadas -->
+                <div class="consolidated-card" style="border-top: 3px solid #3498db; padding: 20px; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <label style="font-size:0.75rem; color:#707372; font-weight:800; letter-spacing:0.5px; text-transform: uppercase; margin-bottom: 8px;">Total Comisiones Generadas</label>
+                    <span id="fob-kpi-generadas" style="font-size:1.8rem; font-weight:900; color:#3498db; line-height: 1.2;">$0.00</span>
+                    <span style="font-size:0.7rem; color:#b2b4b2; margin-top: 4px;">Comisiones de todos los pedidos FOB</span>
+                </div>
+                <!-- Card 2: Comisiones Facturadas -->
+                <div class="consolidated-card" style="border-top: 3px solid #2ecc71; padding: 20px; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <label style="font-size:0.75rem; color:#707372; font-weight:800; letter-spacing:0.5px; text-transform: uppercase; margin-bottom: 8px;">Total Comisiones Facturadas</label>
+                    <span id="fob-kpi-facturadas" style="font-size:1.8rem; font-weight:900; color:#2ecc71; line-height: 1.2;">$0.00</span>
+                    <span style="font-size:0.7rem; color:#b2b4b2; margin-top: 4px;">Comisiones con factura Caproin</span>
+                </div>
+                <!-- Card 3: Comisiones Pendientes -->
+                <div class="consolidated-card" style="border-top: 3px solid #e67e22; padding: 20px; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <label style="font-size:0.75rem; color:#707372; font-weight:800; letter-spacing:0.5px; text-transform: uppercase; margin-bottom: 8px;">Total Comisiones Pendientes</label>
+                    <span id="fob-kpi-pendientes" style="font-size:1.8rem; font-weight:900; color:#e67e22; line-height: 1.2;">$0.00</span>
+                    <span style="font-size:0.7rem; color:#b2b4b2; margin-top: 4px;">Comisiones por facturar</span>
+                </div>
+            </div>
+
+            <!-- Fila 1: Comisiones Generadas por Mes y Vendedor (Gráfico + Tabla completa) -->
+            <div class="dashboard-row" style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 10px; width: 100%;">
+                <div class="chart-box" style="border-top: 3px solid #3498db; flex: 1; min-width: 100%; margin: 0; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <div class="chart-box-header">
+                        <div>
+                            <h3>COMISIONES GENERADAS POR MES Y VENDEDOR</h3>
+                            <p>Comisiones totales distribuidas por mes y vendedor ($ USD)</p>
+                        </div>
+                    </div>
+                    <div class="chart-area" style="height: 340px; margin-bottom: 20px; position: relative;">
+                        <canvas id="chart-fob-comisiones-mes-vendedor"></canvas>
+                    </div>
+                    <div style="overflow-x: auto; border-top: 1px solid var(--border); padding-top: 15px;">
+                        <table class="grid-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                                    <th style="padding: 8px;">Vendedor</th>
+                                    <th style="padding: 8px; text-align: right;">Ene</th>
+                                    <th style="padding: 8px; text-align: right;">Feb</th>
+                                    <th style="padding: 8px; text-align: right;">Mar</th>
+                                    <th style="padding: 8px; text-align: right;">Abr</th>
+                                    <th style="padding: 8px; text-align: right;">May</th>
+                                    <th style="padding: 8px; text-align: right;">Jun</th>
+                                    <th style="padding: 8px; text-align: right;">Jul</th>
+                                    <th style="padding: 8px; text-align: right;">Ago</th>
+                                    <th style="padding: 8px; text-align: right;">Sep</th>
+                                    <th style="padding: 8px; text-align: right;">Oct</th>
+                                    <th style="padding: 8px; text-align: right;">Nov</th>
+                                    <th style="padding: 8px; text-align: right;">Dic</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: bold; border-left: 1px solid var(--border);">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fob-table-mes-vendedor-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fila 2: Comisiones Facturadas vs Pendientes (Izquierda) + Distribución por Marca (Derecha) -->
+            <div class="dashboard-row" style="display: flex; flex-wrap: wrap; gap: 20px; width: 100%;">
+                <!-- Facturadas vs Pendientes -->
+                <div class="chart-box" style="border-top: 3px solid #2ecc71; flex: 1.1; min-width: 450px; margin: 0; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <div class="chart-box-header">
+                        <div>
+                            <h3>COMISIONES FACTURADAS VS PENDIENTES</h3>
+                            <p>Comparativo por vendedor: Facturado vs Pendiente de cobro ($ USD)</p>
+                        </div>
+                    </div>
+                    <div class="chart-area" style="height: 280px; margin-bottom: 20px; position: relative;">
+                        <canvas id="chart-fob-facturadas-vs-pendientes"></canvas>
+                    </div>
+                    <div style="overflow-x: auto; border-top: 1px solid var(--border); padding-top: 15px; flex-grow: 1;">
+                        <table class="grid-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                                    <th style="padding: 8px;">Vendedor</th>
+                                    <th style="padding: 8px; text-align: right;">Facturado</th>
+                                    <th style="padding: 8px; text-align: right;">Pendiente</th>
+                                    <th style="padding: 8px; text-align: right; font-weight: bold; border-left: 1px solid var(--border);">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fob-table-facturadas-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Comisiones por Casa/Marca -->
+                <div class="chart-box" style="border-top: 3px solid #9b59b6; flex: 0.9; min-width: 450px; margin: 0; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <div class="chart-box-header">
+                        <div>
+                            <h3>COMISIONES GENERADAS POR MARCA / CASA</h3>
+                            <p>Distribución de comisiones por marca/casa y participación</p>
+                        </div>
+                    </div>
+                    <div class="chart-area" style="height: 280px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; position: relative;">
+                        <canvas id="chart-fob-comisiones-marca" style="max-height: 100%; max-width: 100%;"></canvas>
+                    </div>
+                    <div style="overflow-x: auto; border-top: 1px solid var(--border); padding-top: 15px; flex-grow: 1;">
+                        <table class="grid-table" style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                                    <th style="padding: 8px;">Marca/Casa</th>
+                                    <th style="padding: 8px; text-align: right;">Generadas ($)</th>
+                                    <th style="padding: 8px; text-align: right;">% Part.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fob-table-marca-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="client-analysis-row" style="margin-top: 25px; display: flex; justify-content: flex-end; width: 100%; grid-column: 1 / -1;">
+            <div class="list-box neon-frame" style="width: 40%; min-width: 380px; box-sizing: border-box; padding: 15px; margin-bottom: 30px;">
+                <div class="list-box-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div>
+                        <h3 style="font-size: 0.95rem; font-weight: bold; margin: 0;">DETALLE CIF Y FOB</h3>
+                        <p style="font-size: 0.6rem; margin: 2px 0 0 0;">Comparativa de Presupuesto vs Real por cada representante</p>
+                    </div>
+                </div>
+                <div class="client-table-wrapper" style="overflow-x: auto; margin-top: 5px;">
+                    <table id="reunion-vendor-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border);">
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; min-width: 140px;">VENDEDOR</th>
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; text-align: right;">PRESUPUESTO</th>
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; text-align: right;">REAL</th>
+                                <th style="padding: 6px 8px; font-size: 0.75rem; color: var(--brand-gray); font-weight: 800; text-align: right; width: 50px;">%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Inyectado por JS -->
+                        </tbody>
+                        <tfoot style="font-weight: 800; border-top: 2px solid var(--border); font-size: 0.75rem;">
+                            <tr style="background: rgba(39,174,96,0.1); color: #1e8449;">
+                                <td style="padding: 6px 8px; font-weight: 800; border-right: 1px solid var(--border);">TOTAL GENERAL</td>
+                                <td id="revt-ppto-tot" style="padding: 6px 8px; text-align: right;">$0</td>
+                                <td id="revt-real-tot" style="padding: 6px 8px; text-align: right; font-weight: 800;">$0</td>
+                                <td id="revt-cump-tot" style="padding: 6px 8px; text-align: right; font-weight: 900;">0%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- ===== EMAIL REPORT MODAL ===== -->
+    <div id="email-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;">
+        <div
+            style="background:var(--bg-card); border:1px solid var(--accent-mid); border-radius:16px; padding:28px 32px; width:680px; max-width:95vw; box-shadow:0 0 40px rgba(0,236,255,0.15); font-family:'Inter',sans-serif;">
+
+            <!-- Header -->
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                <h2
+                    style="font-family:'Orbitron',monospace; font-size:0.9rem; color:var(--accent); letter-spacing:0.1em;">
+                    📧 ENVIAR REPORTE SEMANAL</h2>
+                <button onclick="closeEmailModal()"
+                    style="background:none; border:none; color:var(--text-gray); cursor:pointer; font-size:1.4rem; line-height:1;">&times;</button>
+            </div>
+
+            <!-- Destinatarios -->
+            <div style="margin-bottom:16px;">
+                <label
+                    style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em;">Destinatarios</label>
+                <div id="recipients-tags"
+                    style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; padding:6px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; min-height:38px;">
+                </div>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <input id="new-recipient-input" type="email" placeholder="nuevo@correo.com"
+                        style="flex:1; padding:7px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:var(--text-white); font-size:0.82rem; outline:none;"
+                        onkeydown="if(event.key==='Enter')addRecipient()">
+                    <button onclick="addRecipient()"
+                        style="padding:7px 16px; background:var(--accent-dim); border:1px solid var(--accent-mid); border-radius:8px; color:var(--accent); font-size:0.78rem; cursor:pointer; font-family:'Orbitron',monospace;">+
+                        AGREGAR</button>
+                </div>
+            </div>
+
+            <!-- Asunto -->
+            <div style="margin-bottom:16px;">
+                <label
+                    style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em;">Asunto</label>
+                <input id="email-subject" type="text"
+                    style="width:100%; margin-top:6px; padding:8px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:var(--text-white); font-size:0.84rem; outline:none;">
+            </div>
+
+            <!-- Cuerpo -->
+            <div style="margin-bottom:16px;">
+                <label
+                    style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em;">Mensaje</label>
+                <textarea id="email-body" rows="8"
+                    style="width:100%; margin-top:6px; padding:8px 12px; background:var(--bg-input); border:1px solid var(--border); border-radius:8px; color:var(--text-white); font-size:0.8rem; outline:none; resize:vertical; font-family:monospace; white-space: pre;"></textarea>
+            </div>
+
+            <!-- Preview imagen -->
+            <div style="margin-bottom:20px;">
+                <label
+                    style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em;">Vista
+                    Previa (imagen a adjuntar)</label>
+                <div id="email-preview-container"
+                    style="margin-top:8px; border:1px solid var(--border); border-radius:8px; overflow:hidden; max-height:220px; overflow-y:auto; background:#000; text-align:center;">
+                    <p id="preview-loading" style="color:var(--text-dim); padding:20px; font-size:0.8rem;">Generando
+                        vista previa...</p>
+                    <img id="email-preview-img" style="display:none; max-width:100%; border-radius:6px;">
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex; gap:12px; justify-content:flex-end;">
+                <button onclick="closeEmailModal()"
+                    style="padding:9px 20px; background:none; border:1px solid var(--border); border-radius:8px; color:var(--text-gray); cursor:pointer; font-size:0.8rem;">Cancelar</button>
+                <button id="btn-copy-table" onclick="copyTableToClipboard()"
+                    style="padding:9px 24px; background:var(--emerald-dim); border:1px solid var(--emerald-mid); border-radius:8px; color:var(--emerald); cursor:pointer; font-family:'Orbitron',monospace; font-size:0.75rem; letter-spacing:0.06em;"><i
+                        data-lucide="copy" style="width:14px;height:14px;"></i> COPIAR TABLA COLOR</button>
+                <button onclick="launchOutlook()"
+                    style="padding:9px 24px; background:var(--accent-dim); border:1px solid var(--accent-mid); border-radius:8px; color:var(--accent); cursor:pointer; font-family:'Orbitron',monospace; font-size:0.75rem; letter-spacing:0.06em;"><i
+                        data-lucide="send" style="width:14px;height:14px;"></i> ABRIR EN OUTLOOK</button>
+            </div>
+
+            <p style="margin-top:14px; font-size:0.7rem; color:var(--text-dim); text-align:center; line-height:1.5;">
+                💡 Para incluir la tabla con <strong>colores y bordes</strong>: <br>
+                1. Haz clic en <strong style="color:var(--emerald);">COPIAR TABLA COLOR</strong>. <br>
+                2. Haz clic en <strong style="color:var(--accent);">ABRIR EN OUTLOOK</strong>. <br>
+                3. En el correo, pulsa <strong style="color:var(--text-white);">Ctrl + V</strong> para pegar la tabla
+                original.
+            </p>
+        </div>
+    </div>
+    <!-- ===== / EMAIL MODAL ===== -->
+
+    </div> <!-- /app-shell -->
+
+    <script src="pedidos_fob_data.js"></script>
+    <script src="script.js?v=2.0"></script>
+    <script src="export-utils.js"></script>
+    
+    <!-- Seccion Zonal Custom Script -->
+    <script>
+        // --- CÓDIGO DE FILTRADO Y TABLA DE TOP CLIENTES POR ZONA ---
+        (function() {
+            let currentDashboardData = [];
+
+            // Helper to get margin badge HTML matching Caproin theme
+            function getMarginBadgeHtml(marginPct, marginMonto) {
+                let color = '#707372'; // Medium Gray
+                let bg = 'rgba(0,0,0,0.04)';
+                if (marginPct > 20) {
+                    color = '#27ae60'; // Success Green
+                    bg = 'rgba(39, 174, 96, 0.08)';
+                } else if (marginPct > 10) {
+                    color = '#f39c12'; // Warning orange (or yellow)
+                    bg = 'rgba(243, 156, 18, 0.08)';
+                } else if (marginPct <= 0) {
+                    color = '#D22630'; // Brand Red
+                    bg = 'rgba(210, 38, 48, 0.08)';
+                }
+                return `<span style="color: ${color}; background: ${bg}; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.72rem; border: 1px solid ${color}20; display: inline-block;">${marginPct.toFixed(2)} %</span>`;
+            }
+
+            // Accordion renderer
+            function renderZonalClientAccordion(client) {
+                const productGroups = {}; // Brand -> ProdName -> { qty, subtotal, cost }
+
+                client.invoices.forEach(inv => {
+                    (inv.items || []).forEach(item => {
+                        const brand = item.DESCRIPCION_MARCA || 'Genérico';
+                        const prodName = item.DESCRIPCION_ITEM || 'Sin Descripción';
+                        const qty = item.CANTIDAD || 0;
+                        const subtotal = item.SUBTOTAL || 0;
+                        const cost = item.TOTAL_COSTO || 0;
+
+                        if (!productGroups[brand]) {
+                            productGroups[brand] = {};
+                        }
+                        if (!productGroups[brand][prodName]) {
+                            productGroups[brand][prodName] = { qty: 0, subtotal: 0, cost: 0 };
+                        }
+                        productGroups[brand][prodName].qty += qty;
+                        productGroups[brand][prodName].subtotal += subtotal;
+                        productGroups[brand][prodName].cost += cost;
+                    });
+                });
+
+                const brandKeys = Object.keys(productGroups).sort();
+                if (brandKeys.length === 0) {
+                    return `
+                        <div style="padding: 10px; color: var(--text-dim); text-align: center; font-size: 0.8rem;">
+                            No hay desglose de productos disponible para este cliente.
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div style="padding: 15px; background: rgba(0, 0, 0, 0.015); border-radius: 8px; border: 1px solid var(--border); box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);">
+                        <h4 style="margin: 0 0 12px 0; font-size: 0.85rem; color: var(--text-white); font-weight: 800; border-bottom: 2px solid var(--brand-red); padding-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
+                            Desglose de Productos Comprados (Agrupado por Marca)
+                        </h4>
+                        ${brandKeys.map(brand => {
+                            const prods = productGroups[brand];
+                            const prodKeys = Object.keys(prods).sort((a, b) => prods[b].subtotal - prods[a].subtotal);
+
+                            return `
+                                <div class="brand-group-container" style="margin-bottom: 12px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--bg-card);">
+                                    <div style="background: rgba(210, 38, 48, 0.04); padding: 8px 12px; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.78rem; text-transform: uppercase; color: var(--brand-red); display: flex; justify-content: space-between; align-items: center;">
+                                        <span>Marca / Casa: ${brand}</span>
+                                        <span class="tag" style="padding: 2px 10px !important; font-size: 0.7rem !important; background: var(--brand-red) !important; color: #fff !important; border: none !important;">
+                                            ${prodKeys.length} ${prodKeys.length === 1 ? 'Producto' : 'Productos'}
+                                        </span>
+                                    </div>
+                                    <div style="overflow-x: auto; width: 100%;">
+                                        <table style="width: 100%; border-collapse: collapse; min-width: 500px;">
+                                            <thead>
+                                                <tr style="border-bottom: 1px solid var(--border); font-size: 0.72rem; color: var(--text-muted); text-align: left; background: rgba(0, 0, 0, 0.01);">
+                                                    <th style="padding: 6px 10px; font-weight: 600;">Nombre del Producto</th>
+                                                    <th style="padding: 6px 10px; text-align: right; font-weight: 600; width: 100px;">Cantidad</th>
+                                                    <th style="padding: 6px 10px; text-align: right; font-weight: 600; width: 130px;">Venta Total</th>
+                                                    <th style="padding: 6px 10px; text-align: right; font-weight: 600; width: 130px;">Margen (Monto)</th>
+                                                    <th style="padding: 6px 10px; text-align: center; font-weight: 600; width: 110px;">Margen (%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${prodKeys.map(prodName => {
+                                                    const p = prods[prodName];
+                                                    const marginMonto = p.subtotal - p.cost;
+                                                    const marginPct = p.subtotal > 0 ? (marginMonto / p.subtotal) * 100 : 0;
+                                                    return `
+                                                        <tr style="border-bottom: 1px solid rgba(0, 0, 0, 0.03); font-size: 0.78rem;">
+                                                            <td style="padding: 6px 10px; color: var(--text-white); white-space: normal; line-height: 1.2;">
+                                                                ${prodName}
+                                                            </td>
+                                                            <td style="padding: 6px 10px; text-align: right; font-weight: 500;">
+                                                                ${p.qty.toLocaleString()}
+                                                            </td>
+                                                            <td style="padding: 6px 10px; text-align: right; font-weight: 600;">
+                                                                ${formatCurrency(p.subtotal)}
+                                                            </td>
+                                                            <td style="padding: 6px 10px; text-align: right; font-weight: 600; color: ${marginMonto < 0 ? 'var(--brand-red)' : 'var(--text-white)'};">
+                                                                ${formatCurrency(marginMonto)}
+                                                            </td>
+                                                            <td style="padding: 6px 10px; text-align: center; vertical-align: middle;">
+                                                                ${getMarginBadgeHtml(marginPct, marginMonto)}
+                                                            </td>
+                                                        </tr>
+                                                    `;
+                                                }).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            // Main update function
+            window.updateZonalTopClients = function(data) {
+                if (data) {
+                    currentDashboardData = data;
+                }
+
+                const selectedZona = document.getElementById('zonal-filter-zona').value;
+                const selectedMes = document.getElementById('zonal-filter-mes').value;
+                const selectedAnio = document.getElementById('zonal-filter-anio').value;
+
+                // Filter data
+                let filtered = currentDashboardData;
+
+                // 1. Filter by Zona
+                filtered = filtered.filter(inv => inv.ID_ZONA === selectedZona);
+
+                // 2. Filter by Mes
+                if (selectedMes !== 'all') {
+                    const m = parseInt(selectedMes, 10);
+                    filtered = filtered.filter(inv => (inv.FECHA.getMonth() + 1) === m);
+                }
+
+                // 3. Filter by Año
+                if (selectedAnio !== 'all') {
+                    const y = parseInt(selectedAnio, 10);
+                    filtered = filtered.filter(inv => inv.FECHA.getFullYear() === y);
+                }
+
+                // Aggregate by Client
+                const clientsData = {};
+                filtered.forEach(inv => {
+                    const client = inv.NOMBRE_TERCERO || 'Desconocido';
+                    if (!clientsData[client]) {
+                        clientsData[client] = {
+                            name: client,
+                            cif: 0,
+                            fob: 0,
+                            total: 0,
+                            costo: 0,
+                            invoices: []
+                        };
+                    }
+
+                    const subtotal = inv.invoiceSubtotal || 0;
+                    const costo = inv.invoiceCosto || 0;
+
+                    if (inv.isEX) {
+                        clientsData[client].fob += subtotal;
+                    } else {
+                        clientsData[client].cif += subtotal;
+                    }
+                    clientsData[client].total += subtotal;
+                    clientsData[client].costo += costo;
+                    clientsData[client].invoices.push(inv);
+                });
+
+                // Sort and get Top 5
+                const topClients = Object.values(clientsData)
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 5);
+
+                // Render Table Body
+                const tbody = document.getElementById('zonal-top-clients-tbody');
+                if (!tbody) return;
+
+                if (topClients.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-dim);">
+                                No hay datos disponibles para la combinación de filtros seleccionada.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = topClients.map((client, idx) => {
+                    const marginMonto = client.total - client.costo;
+                    const marginPct = client.total > 0 ? (marginMonto / client.total) * 100 : 0;
+
+                    const rowId = `zonal-client-row-${idx}`;
+                    const detailId = `zonal-client-detail-${idx}`;
+
+                    return `
+                        <tr id="${rowId}" style="cursor: pointer; transition: background 0.2s;" onclick="toggleZonalAccordion('${detailId}', '${rowId}')">
+                            <td style="text-align: center;">
+                                <i data-lucide="chevron-down" class="zonal-expand-icon" style="transition: transform 0.2s; width: 16px; height: 16px; display: inline-block;"></i>
+                            </td>
+                            <td style="font-weight: 700; color: var(--text-white); white-space: normal;">
+                                ${client.name}
+                            </td>
+                            <td style="text-align: right; font-weight: 500;">
+                                ${formatCurrency(client.cif)}
+                            </td>
+                            <td style="text-align: right; font-weight: 500;">
+                                ${formatCurrency(client.fob)}
+                            </td>
+                            <td style="text-align: right; font-weight: 800; color: var(--brand-red);">
+                                ${formatCurrency(client.total)}
+                            </td>
+                            <td style="text-align: right; font-weight: 500; color: var(--text-secondary);">
+                                ${formatCurrency(client.costo)}
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">
+                                <div style="font-weight: 700; color: var(--text-white); font-size: 0.85rem;">${formatCurrency(marginMonto)}</div>
+                                <div style="margin-top: 2px;">
+                                    ${getMarginBadgeHtml(marginPct, marginMonto)}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="${detailId}" class="zonal-detail-row" style="display: none; background: rgba(0, 0, 0, 0.005);">
+                            <td colspan="7" style="padding: 12px 20px; border-bottom: 1px solid var(--border);">
+                                ${renderZonalClientAccordion(client)}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            };
+
+            // Accordion toggle helper
+            window.toggleZonalAccordion = function(detailId, rowId) {
+                const detailRow = document.getElementById(detailId);
+                const row = document.getElementById(rowId);
+                if (!detailRow || !row) return;
+
+                const icon = row.querySelector('.zonal-expand-icon');
+                const isCollapsed = detailRow.style.display === 'none';
+
+                if (isCollapsed) {
+                    detailRow.style.display = 'table-row';
+                    if (icon) icon.style.transform = 'rotate(180deg)';
+                    row.style.background = 'rgba(210, 38, 48, 0.02)';
+                } else {
+                    detailRow.style.display = 'none';
+                    if (icon) icon.style.transform = 'rotate(0deg)';
+                    row.style.background = 'transparent';
+                }
+            };
+
+            // Excel export helper for this table only
+            window.exportZonalTableToExcel = function() {
+                if (!window.XLSX) {
+                    alert("Las librerías de Excel se están cargando. Intente de nuevo en un segundo.");
+                    return;
+                }
+
+                const selectedZonaEl = document.getElementById('zonal-filter-zona');
+                const selectedZonaName = selectedZonaEl ? selectedZonaEl.options[selectedZonaEl.selectedIndex].text : 'Zona';
+
+                const selectedMesEl = document.getElementById('zonal-filter-mes');
+                const selectedMesName = selectedMesEl ? selectedMesEl.options[selectedMesEl.selectedIndex].text : 'Todos';
+
+                const selectedAnioEl = document.getElementById('zonal-filter-anio');
+                const selectedAnioName = selectedAnioEl ? selectedAnioEl.options[selectedAnioEl.selectedIndex].text : 'Todos';
+
+                const selectedZona = selectedZonaEl ? selectedZonaEl.value : '01';
+                const selectedMes = selectedMesEl ? selectedMesEl.value : 'all';
+                const selectedAnio = selectedAnioEl ? selectedAnioEl.value : 'all';
+
+                // Filter data
+                let filtered = currentDashboardData;
+
+                filtered = filtered.filter(inv => inv.ID_ZONA === selectedZona);
+
+                if (selectedMes !== 'all') {
+                    const m = parseInt(selectedMes, 10);
+                    filtered = filtered.filter(inv => (inv.FECHA.getMonth() + 1) === m);
+                }
+
+                if (selectedAnio !== 'all') {
+                    const y = parseInt(selectedAnio, 10);
+                    filtered = filtered.filter(inv => inv.FECHA.getFullYear() === y);
+                }
+
+                // Aggregate
+                const clientsData = {};
+                filtered.forEach(inv => {
+                    const client = inv.NOMBRE_TERCERO || 'Desconocido';
+                    if (!clientsData[client]) {
+                        clientsData[client] = {
+                            name: client,
+                            cif: 0,
+                            fob: 0,
+                            total: 0,
+                            costo: 0,
+                            invoices: []
+                        };
+                    }
+
+                    const subtotal = inv.invoiceSubtotal || 0;
+                    const costo = inv.invoiceCosto || 0;
+
+                    if (inv.isEX) {
+                        clientsData[client].fob += subtotal;
+                    } else {
+                        clientsData[client].cif += subtotal;
+                    }
+                    clientsData[client].total += subtotal;
+                    clientsData[client].costo += costo;
+                    clientsData[client].invoices.push(inv);
+                });
+
+                const topClients = Object.values(clientsData)
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 5);
+
+                if (topClients.length === 0) {
+                    alert("No hay datos en la tabla para exportar.");
+                    return;
+                }
+
+                const ws_data = [];
+
+                // Header Info
+                ws_data.push(["CAPROIN S.A. - REPORTE GERENCIAL DE VENTAS"]);
+                ws_data.push(["TOP 5 CLIENTES POR ZONA - DETALLE DE COMPRAS Y MARGENES"]);
+                ws_data.push([]);
+                ws_data.push(["Filtros Aplicados:"]);
+                ws_data.push(["Zona:", selectedZonaName]);
+                ws_data.push(["Mes:", selectedMesName]);
+                ws_data.push(["Año:", selectedAnioName]);
+                ws_data.push([]);
+
+                // Table Headers
+                ws_data.push([
+                    "Cliente / Marca / Producto", 
+                    "Cantidad", 
+                    "Ventas CIF", 
+                    "Ventas FOB", 
+                    "Total Facturado", 
+                    "Costo Total", 
+                    "Margen Monto", 
+                    "Margen %"
+                ]);
+
+                topClients.forEach(client => {
+                    const marginMonto = client.total - client.costo;
+                    const marginPct = client.total > 0 ? (marginMonto / client.total) * 100 : 0;
+                    
+                    // Add Client Row
+                    ws_data.push([
+                        client.name, 
+                        "", 
+                        client.cif, 
+                        client.fob, 
+                        client.total, 
+                        client.costo, 
+                        marginMonto, 
+                        marginPct / 100
+                    ]);
+                    
+                    // Group items by Brand
+                    const productGroups = {};
+                    client.invoices.forEach(inv => {
+                        (inv.items || []).forEach(item => {
+                            const brand = item.DESCRIPCION_MARCA || 'Genérico';
+                            const prodName = item.DESCRIPCION_ITEM || 'Sin Descripción';
+                            const qty = item.CANTIDAD || 0;
+                            const subtotal = item.SUBTOTAL || 0;
+                            const cost = item.TOTAL_COSTO || 0;
+
+                            if (!productGroups[brand]) {
+                                productGroups[brand] = {};
+                            }
+                            if (!productGroups[brand][prodName]) {
+                                productGroups[brand][prodName] = { qty: 0, subtotal: 0, cost: 0 };
+                            }
+                            productGroups[brand][prodName].qty += qty;
+                            productGroups[brand][prodName].subtotal += subtotal;
+                            productGroups[brand][prodName].cost += cost;
+                        });
+                    });
+                    
+                    const brandKeys = Object.keys(productGroups).sort();
+                    brandKeys.forEach(brand => {
+                        // Add Brand Row (Indented)
+                        ws_data.push([
+                            `  [Marca: ${brand}]`, 
+                            "", "", "", "", "", "", ""
+                        ]);
+                        
+                        const prods = productGroups[brand];
+                        const prodKeys = Object.keys(prods).sort((a,b) => prods[b].subtotal - prods[a].subtotal);
+                        prodKeys.forEach(prodName => {
+                            const p = prods[prodName];
+                            const pMarginMonto = p.subtotal - p.cost;
+                            const pMarginPct = p.subtotal > 0 ? (pMarginMonto / p.subtotal) * 100 : 0;
+                            
+                            // Add Product Row
+                            ws_data.push([
+                                `    - ${prodName}`, 
+                                p.qty, 
+                                "", 
+                                "", 
+                                p.subtotal, 
+                                p.cost, 
+                                pMarginMonto, 
+                                pMarginPct / 100
+                            ]);
+                        });
+                    });
+                    
+                    // Spacing row
+                    ws_data.push([]);
+                });
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+                // Set widths
+                ws['!cols'] = [
+                    { wch: 45 },
+                    { wch: 10 },
+                    { wch: 15 },
+                    { wch: 15 },
+                    { wch: 18 },
+                    { wch: 15 },
+                    { wch: 15 },
+                    { wch: 12 }
+                ];
+
+                // Formats
+                const range = XLSX.utils.decode_range(ws['!ref']);
+                for (let R = range.s.r; R <= range.e.r; ++R) {
+                    if (R < 8) continue; // Skip title, filters, empty lines
+                    
+                    for (let C = range.s.c; C <= range.e.c; ++C) {
+                        const cell_ref = XLSX.utils.encode_cell({c: C, r: R});
+                        const cell = ws[cell_ref];
+                        if (!cell) continue;
+                        
+                        if (cell.t === 'n') {
+                            if (C === 1) {
+                                cell.z = '#,##0';
+                            } else if ([2, 3, 4, 5, 6].includes(C)) {
+                                cell.z = '"$"#,##0';
+                            } else if (C === 7) {
+                                cell.z = '0.00%';
+                            }
+                        }
+                    }
+                }
+
+                const cleanZone = selectedZonaName.replace(/[\/\\?*\[\]]/g, "").trim().substring(0, 20);
+                XLSX.utils.book_append_sheet(wb, ws, `Top5_${cleanZone}`);
+                
+                const dateStr = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `Top_5_Clientes_${cleanZone.replace(/ /g, "_")}_${dateStr}.xlsx`);
+            };
+
+            // Setup listeners and intercept main dashboard updates
+            document.addEventListener('DOMContentLoaded', () => {
+                // Intercept the dashboard update
+                const originalUpdateDashboard = window.updateDashboard;
+                window.updateDashboard = function(data, startFilter, endFilter) {
+                    if (originalUpdateDashboard) {
+                        try {
+                            originalUpdateDashboard(data, startFilter, endFilter);
+                        } catch (e) {
+                            console.error("Error in original updateDashboard:", e);
+                        }
+                    }
+                    window.updateZonalTopClients(data);
+                };
+
+                // Add change listeners to local filters
+                const filterZona = document.getElementById('zonal-filter-zona');
+                const filterMes = document.getElementById('zonal-filter-mes');
+                const filterAnio = document.getElementById('zonal-filter-anio');
+
+                if (filterZona) filterZona.addEventListener('change', () => window.updateZonalTopClients());
+                if (filterMes) filterMes.addEventListener('change', () => window.updateZonalTopClients());
+                if (filterAnio) filterAnio.addEventListener('change', () => window.updateZonalTopClients());
+                
+                // If data has already been loaded, run initial rendering
+                if (window.allInvoices && window.allInvoices.length > 0) {
+                    window.updateZonalTopClients(window.allInvoices);
+                }
+            });
+        })();
+    </script>
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
+</body>
+</html>
