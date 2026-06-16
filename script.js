@@ -70,19 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
     loadDataFromApi();
 });
-
 function setDefaultMonth() {
+    // Función vaciada para evitar bloqueos con el HTML viejo
     const now = new Date();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const yearMonth = `${now.getFullYear()}-${month}`;
-    
-    // Protección: evita el error si el elemento no existe en el index.html
-    const monthInput = document.getElementById('analysis-month');
-    if (monthInput) {
-        monthInput.value = yearMonth;
-    }
-    activeFilters.month = yearMonth;
+    activeFilters.month = `${now.getFullYear()}-${month}`;
 }
+
 
 
 // Helper for case-insensitive and alternative field access
