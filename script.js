@@ -1,6 +1,6 @@
 ﻿// Configuration
 const API_URL = "https://ponypro.ibla.co:31406/all/invoice";
-const API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2OTEzNWEwNmQzYTFkOGE2MTBkNTU5NGEiLCJpYXQiOjE3ODE2MjYxOTYsImV4cCI6MTc4MjkyMjE5Nn0.owTGAp8ANHapNTXsHcef5UgaRxsMxRFCYRgOkOdgRM8";
+const API_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2OTEzNWEwNmQzYTFkOGE2MTBkNTU5NGEiLCJpYXQiOjE3ODI5OTgyODksImV4cCI6MTc4NDI5NDI4OX0.pcQTkCg0O74srMHJ_9wQ_nhG7WIAsHEEINvYqmOSBKE";
 
 // ── Chart.js Globales: fuentes más grandes para densificación ──
 // NOTA: NO reemplazar Chart.defaults.scales (rompe el rastreo de instancias)
